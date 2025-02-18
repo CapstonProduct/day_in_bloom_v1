@@ -1,74 +1,53 @@
+import 'package:day_in_bloom_v1/utils/router_without_animation.dart';
+import 'package:day_in_bloom_v1/widgets/app_bar.dart';
+import 'package:day_in_bloom_v1/widgets/navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:go_router/go_router.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // await Future.delayed(const Duration(seconds: 3));
   FlutterNativeSplash.remove;
 
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: '테스트'),
-      debugShowCheckedModeBanner: false,
+    return MaterialApp.router(
+      routerConfig: appRouter,
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+class MainScreen extends StatefulWidget {
+  final Widget child;
+  const MainScreen({super.key, required this.child});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  _MainScreenState createState() => _MainScreenState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _MainScreenState extends State<MainScreen> {
+  int _selectedIndex = 0;
+  static const List<String> _routes = ['/home', '/screen2', '/screen3'];
 
-  void _incrementCounter() {
+  void _onItemTapped(int index) {
+    context.go(_routes[index]);
     setState(() {
-      _counter++;
+      _selectedIndex = index;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-      return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+    return Scaffold(
+      body: widget.child,
+      bottomNavigationBar: CustomNavigationBar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), 
     );
   }
 }
