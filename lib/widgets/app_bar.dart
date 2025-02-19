@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -26,11 +27,15 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         IconButton(
           icon: const Icon(Icons.notifications_none_outlined),
-          onPressed: () {},
+          onPressed: () {
+            context.go('/homeCalendar/notiList');
+          },
         ),
         IconButton(
           icon: const Icon(Icons.account_circle_outlined),
-          onPressed: () {},
+          onPressed: () {
+            context.go('/homeSetting/viewProfile');
+          },
         ),
       ],
       bottom: PreferredSize(

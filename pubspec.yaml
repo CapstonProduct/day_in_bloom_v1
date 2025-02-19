@@ -36,7 +36,10 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_native_splash: ^2.4.4
   go_router: ^14.8.0
-  table_calendar: ^3.2.0
+  table_calendar: ^3.1.3
+  flutter_localizations: 
+    sdk: flutter
+  intl: any
 
 flutter_native_splash:
   android: true
@@ -74,6 +77,40 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/logo.png
+    - assets/flower_phase/flower_phase1.png
+    - assets/flower_phase/flower_phase2.png
+    - assets/flower_phase/flower_phase3.png
+    - assets/flower_phase/flower_phase4.png
+    - assets/flower_phase/clover_phase1.png
+    - assets/flower_phase/clover_phase2.png
+    - assets/flower_phase/clover_phase3.png
+    - assets/flower_phase/clover_phase4.png
+    - assets/home_icon/dumbell.png
+    - assets/home_icon/flower_icon.png
+    - assets/home_icon/green_youtube.png
+    - assets/home_icon/pillow.png
+    - assets/mission_icon/doctor.png
+    - assets/mission_icon/elderly.png
+    - assets/mission_icon/report.png
+    - assets/mission_icon/runner.png
+    - assets/setting_icon/account.png
+    - assets/setting_icon/alarm_set.png
+    - assets/setting_icon/alphabet.png
+    - assets/setting_icon/select_flower.png
+    - assets/setting_icon/logout.png
+    - assets/setting_icon/trashcan.png
+    - assets/report_icon/blue_pdf.png
+    - assets/report_icon/green_pdf.png
+    - assets/report_icon/family_talk.png
+    - assets/report_icon/doctor_talk.png
+    - assets/report_icon/headache.png
+    - assets/report_icon/report.png
+    - assets/report_icon/pillow.png
+    - assets/report_icon/dumbell.png
+    - assets/profile_icon/green_profile.png
+    - assets/profile_icon/red_profile.png
+    - assets/profile_icon/orange_profile.png
+    - assets/profile_icon/camera.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

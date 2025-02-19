@@ -1,13 +1,16 @@
-import 'package:day_in_bloom_v1/features/home/screen/screen2_detail.dart';
-import 'package:day_in_bloom_v1/features/home/screen/screen3_detail.dart';
+import 'package:day_in_bloom_v1/features/mission/screen/exvideo_screen.dart';
+import 'package:day_in_bloom_v1/features/mission/screen/mission_screen.dart';
+import 'package:day_in_bloom_v1/features/notification/screen/notification_list_screen.dart';
+import 'package:day_in_bloom_v1/features/setting/screen/medical_checkup_screen.dart';
+import 'package:day_in_bloom_v1/features/setting/screen/modify_profile_screen.dart';
+import 'package:day_in_bloom_v1/features/setting/screen/permission_screen.dart';
+import 'package:day_in_bloom_v1/features/setting/screen/view_profile_screen.dart';
 import 'package:day_in_bloom_v1/main.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:day_in_bloom_v1/features/home/screen/home_calender_screen.dart';
-import 'package:day_in_bloom_v1/features/home/screen/screen1_detail.dart';
 import 'package:day_in_bloom_v1/features/home/screen/home_qna_screen.dart';
 import 'package:day_in_bloom_v1/features/home/screen/home_setting_screen.dart';
-import 'package:day_in_bloom_v1/features/home/screen/screen1_deeptail.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/homeCalendar',
@@ -22,34 +25,44 @@ final GoRouter appRouter = GoRouter(
           pageBuilder: (context, state) => NoTransitionPage(child: HomeCalendarScreen()),
           routes: [
             GoRoute(
-              path: 'detail',
-              pageBuilder: (context, state) => NoTransitionPage(child: Screen1Detail()),
-              routes: [
-                GoRoute(
-                  path: 'deeptail',
-                  pageBuilder: (context, state) => NoTransitionPage(child: Screen1DeepDetail()),
-                ),
-              ],
+              path: 'mission',
+              pageBuilder: (context, state) => NoTransitionPage(child: MissionScreen()),
+            ),
+            GoRoute(
+              path: 'exvideo',
+              pageBuilder: (context, state) => NoTransitionPage(child: ExvideoScreen()),
+            ),
+            GoRoute(
+              path: 'notiList',
+              pageBuilder: (context, state) => NoTransitionPage(child: NotificationListScreen()),
             ),
           ],
         ),
         GoRoute(
           path: '/homeQna',
           pageBuilder: (context, state) => NoTransitionPage(child: HomeQnaScreen()),
-          routes: [
-            GoRoute(
-              path: 'detail',
-              pageBuilder: (context, state) => NoTransitionPage(child: Screen2Detail()),
-            ),
-          ],
         ),
         GoRoute(
           path: '/homeSetting',
           pageBuilder: (context, state) => NoTransitionPage(child: HomeSettingScreen()),
           routes: [
             GoRoute(
-              path: 'detail',
-              pageBuilder: (context, state) => NoTransitionPage(child: Screen3Detail()),
+              path: 'viewProfile',
+              pageBuilder: (context, state) => NoTransitionPage(child: ViewProfileScreen()),
+              routes: [
+                GoRoute(
+                  path: 'modifyProfile',
+                  pageBuilder: (context, state) => NoTransitionPage(child: ModifyProfileScreen()),
+                ),
+                GoRoute(
+                  path: 'medCheckup',
+                  pageBuilder: (context, state) => NoTransitionPage(child: MedicalCheckupScreen()),
+                ),
+              ]
+            ),
+            GoRoute(
+              path: 'permission',
+              pageBuilder: (context, state) => NoTransitionPage(child: PermissionScreen()),
             ),
           ],
         ),
