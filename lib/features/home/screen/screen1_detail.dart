@@ -16,7 +16,7 @@ class Screen1Detail extends StatelessWidget {
             Text('Screen 1 Detail View'),
             ElevatedButton(
               onPressed: () {
-                context.go('/home/detail/deeptail');
+                context.go('/homeCalendar/detail/deeptail');
               },
               child: Text('Go to Deep Detail'),
             ),

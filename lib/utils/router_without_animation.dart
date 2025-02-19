@@ -3,14 +3,14 @@ import 'package:day_in_bloom_v1/features/home/screen/screen3_detail.dart';
 import 'package:day_in_bloom_v1/main.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:day_in_bloom_v1/features/home/screen/screen1.dart';
+import 'package:day_in_bloom_v1/features/home/screen/home_calender_screen.dart';
 import 'package:day_in_bloom_v1/features/home/screen/screen1_detail.dart';
-import 'package:day_in_bloom_v1/features/home/screen/screen2.dart';
-import 'package:day_in_bloom_v1/features/home/screen/screen3.dart';
+import 'package:day_in_bloom_v1/features/home/screen/home_qna_screen.dart';
+import 'package:day_in_bloom_v1/features/home/screen/home_setting_screen.dart';
 import 'package:day_in_bloom_v1/features/home/screen/screen1_deeptail.dart';
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: '/home',
+  initialLocation: '/homeCalendar',
   routes: [
     ShellRoute(
       builder: (context, state, child) {
@@ -18,8 +18,8 @@ final GoRouter appRouter = GoRouter(
       },
       routes: [
         GoRoute(
-          path: '/home',
-          pageBuilder: (context, state) => NoTransitionPage(child: Screen1()),
+          path: '/homeCalendar',
+          pageBuilder: (context, state) => NoTransitionPage(child: HomeCalendarScreen()),
           routes: [
             GoRoute(
               path: 'detail',
@@ -34,8 +34,8 @@ final GoRouter appRouter = GoRouter(
           ],
         ),
         GoRoute(
-          path: '/screen2',
-          pageBuilder: (context, state) => NoTransitionPage(child: Screen2()),
+          path: '/homeQna',
+          pageBuilder: (context, state) => NoTransitionPage(child: HomeQnaScreen()),
           routes: [
             GoRoute(
               path: 'detail',
@@ -44,8 +44,8 @@ final GoRouter appRouter = GoRouter(
           ],
         ),
         GoRoute(
-          path: '/screen3',
-          pageBuilder: (context, state) => NoTransitionPage(child: Screen3()),
+          path: '/homeSetting',
+          pageBuilder: (context, state) => NoTransitionPage(child: HomeSettingScreen()),
           routes: [
             GoRoute(
               path: 'detail',

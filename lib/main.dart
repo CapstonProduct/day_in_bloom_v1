@@ -1,5 +1,4 @@
 import 'package:day_in_bloom_v1/utils/router_without_animation.dart';
-import 'package:day_in_bloom_v1/widgets/app_bar.dart';
 import 'package:day_in_bloom_v1/widgets/navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -16,6 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
       routerConfig: appRouter,
     );
   }
@@ -31,7 +31,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
-  static const List<String> _routes = ['/home', '/screen2', '/screen3'];
+  static const List<String> _routes = ['/homeCalendar', '/homeQna', '/homeSetting'];
 
   void _onItemTapped(int index) {
     context.go(_routes[index]);

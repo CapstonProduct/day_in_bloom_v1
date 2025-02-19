@@ -13,12 +13,36 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: Text(title),
-      backgroundColor: Colors.blue,
-      leading: showBackButton ? BackButton() : null, // 뒤로가기 버튼 추가
+      backgroundColor: Colors.white,
+      centerTitle: true,
+      title: Text(
+        title,
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+        ),
+      ),
+      leading: showBackButton ? const BackButton() : null,
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.notifications_none_outlined),
+          onPressed: () {},
+        ),
+        IconButton(
+          icon: const Icon(Icons.account_circle_outlined),
+          onPressed: () {},
+        ),
+      ],
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(1),
+        child: Container(
+          color: Colors.grey[300],
+          height: 1,
+        ),
+      ),      
     );
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
