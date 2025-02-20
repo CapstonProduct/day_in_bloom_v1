@@ -36,7 +36,7 @@ class ViewProfileScreen extends StatelessWidget {
             const SizedBox(height: 16),
             _buildMealAndCheckupRow(context),
             const SizedBox(height: 16),
-            _buildCodeSection(),
+            _buildCodeSection(context),
           ],
         ),
       ),
@@ -72,7 +72,10 @@ class ViewProfileScreen extends StatelessWidget {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
             padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 15),
           ),
-          child: const Text('내 정보 수정', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          child: const Text(
+            '내 정보 수정', 
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)
+          ),
         ),
       ],
     );
@@ -114,18 +117,90 @@ class ViewProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCodeSection() {
-    return _buildInfoContainer('고유 코드 보기', [
-      _buildInfoItem('보호자 고유 코드', guardianCode),
-      _buildInfoItem('의사 고유 코드', doctorCode),
-    ]);
+  Widget _buildCodeSection(BuildContext context) {
+    return _buildInfoContainer(
+      '고유 코드 보기',
+      [
+        _buildInfoItem('보호자 고유 코드', guardianCode),
+        _buildInfoItem('의사 고유 코드', doctorCode),
+      ],
+      onHelpPressed: () {
+        _showHelpDialog(context);
+      },
+    );
   }
 
-  Widget _buildInfoContainer(String title, List<Widget> children) {
+  void _showHelpDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text(
+          '보호자 고유 코드란?',
+          style: TextStyle(fontWeight: FontWeight.bold),
+          textAlign: TextAlign.center,
+        ),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [          
+            Text(
+              '• 보호자에게는 보호자 고유코드(형식: xxx112),\n'
+              '• 의사에게는 의사 고유코드(형식: ddd112)를\n  제공하세요.',
+            ),
+            SizedBox(height: 10),
+            Text(
+              '어르신의 고유 코드를 받은 사용자는\n어르신의 건강 정보를 열람하고, 어르신께 '
+              '건강 관련 조언 및 응원을 남길 수 있습니다!',
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 20),
+            Text(
+              '⚠ 주의사항  ',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+              textAlign: TextAlign.center,
+            ),
+            Text(
+              '보호자나 의사가 아닌 사람에게 고유 코드를\n제공하지 마세요!',
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: Colors.green,
+              side: const BorderSide(color: Colors.green, width: 2),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+              padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 15),
+            ),
+            child: const Text(
+              '확인', 
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoContainer(String title, List<Widget> children, {VoidCallback? onHelpPressed}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            if (onHelpPressed != null)
+              IconButton(
+                icon: const Icon(Icons.help_outline, color: Colors.grey),
+                onPressed: onHelpPressed,
+              ),
+          ],
+        ),
         const SizedBox(height: 4),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 15),
