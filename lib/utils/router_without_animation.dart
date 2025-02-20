@@ -1,6 +1,7 @@
 import 'package:day_in_bloom_v1/features/mission/screen/exvideo_screen.dart';
 import 'package:day_in_bloom_v1/features/mission/screen/mission_screen.dart';
 import 'package:day_in_bloom_v1/features/notification/screen/notification_list_screen.dart';
+import 'package:day_in_bloom_v1/features/setting/screen/logout_cancel_screen.dart';
 import 'package:day_in_bloom_v1/features/setting/screen/medical_checkup_screen.dart';
 import 'package:day_in_bloom_v1/features/setting/screen/modify_profile_screen.dart';
 import 'package:day_in_bloom_v1/features/setting/screen/permission_screen.dart';
@@ -63,6 +64,10 @@ final GoRouter appRouter = GoRouter(
             GoRoute(
               path: 'permission',
               pageBuilder: (context, state) => NoTransitionPage(child: PermissionScreen()),
+            ),
+            GoRoute(
+              path: 'logoutAndCancel',
+              pageBuilder: (context, state) => NoTransitionPage(child: LogoutCancelScreen()),
             ),
           ],
         ),

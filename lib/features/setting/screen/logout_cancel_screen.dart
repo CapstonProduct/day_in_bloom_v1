@@ -2,8 +2,8 @@ import 'package:day_in_bloom_v1/widgets/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class HomeSettingScreen extends StatelessWidget {
-  const HomeSettingScreen({super.key});
+class LogoutCancelScreen extends StatelessWidget {
+  const LogoutCancelScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,34 +15,18 @@ class HomeSettingScreen extends StatelessWidget {
           children: [
             _buildSettingOption(
               context,
-              title: '글자 크기',
-              imagePath: 'assets/setting_icon/alphabet.png',
+              title: '계정 로그아웃 (나가기)',
+              imagePath: 'assets/setting_icon/logout.png',
               onTap: () {
                 
               },
             ),
             _buildSettingOption(
               context,
-              title: '꽃 선택',
-              imagePath: 'assets/setting_icon/select_flower.png',
+              title: '계정 탈퇴',
+              imagePath: 'assets/setting_icon/trashcan.png',
               onTap: () {
                 
-              },
-            ),
-            _buildSettingOption(
-              context,
-              title: '알림 설정',
-              imagePath: 'assets/setting_icon/alarm_set.png',
-              onTap: () {
-                context.go('/homeSetting/permission');
-              },
-            ),
-            _buildSettingOption(
-              context,
-              title: '계정 관리',
-              imagePath: 'assets/setting_icon/account.png',
-              onTap: () {
-                context.go('/homeSetting/logoutAndCancel');
               },
             ),
           ],
@@ -62,7 +46,7 @@ class HomeSettingScreen extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: Color(0xFFfffef0),
+          color: Color(0xFFf1f6f9),
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
@@ -78,7 +62,7 @@ class HomeSettingScreen extends StatelessWidget {
               width: 8,
               height: 75,
               decoration: BoxDecoration(
-                color: Color(0xFFffdc47),
+                color: Color(0xFF8ab7e1),
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(12),
                   bottomLeft: Radius.circular(12),
