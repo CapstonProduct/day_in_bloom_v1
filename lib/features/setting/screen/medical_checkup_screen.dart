@@ -6,9 +6,50 @@ class MedicalCheckupScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final List<Map<String, String>> checkupItems = [
+      {'label': '이름', 'value': '윤모씨'},
+      {'label': '생년월일', 'value': '1900-00-00'},
+      {'label': '질환력 해당 여부', 'value': '협심증'},
+      {'label': '흡연 여부', 'value': '비흡연자'},
+      {'label': '질환', 'value': '당뇨병'},
+      {'label': '신장', 'value': '201 cm'},
+      {'label': '체중', 'value': '102 kg'},
+      {'label': '허리둘레', 'value': '80 cm'},
+      {'label': '체질량 지수', 'value': '25 kg/m²'},
+      {'label': '시력 (좌/우)', 'value': '-1.0 / -1.0'},
+      {'label': '청력 (좌/우)', 'value': '15 dB / 15 dB'},
+      {'label': '혈압 (최고/최저)', 'value': '102 / 79 mmHg'},
+      {'label': '요단백', 'value': '음성'},
+    ];
+
     return Scaffold(
       appBar: CustomAppBar(title: '건강검진 내역', showBackButton: true),
-      body: Center(child: Text('화이팅')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (int i = 0; i < checkupItems.length; i++)
+              Container(
+                color: i.isOdd ? Colors.white : Colors.grey[100],
+                padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '• ${checkupItems[i]['label']!}',
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black54),
+                    ),
+                    Text(
+                      checkupItems[i]['value']!,
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 }
