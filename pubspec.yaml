@@ -42,6 +42,7 @@ dependencies:
   intl: ^0.19.0
   youtube_player_flutter: ^9.1.1
   url_launcher: ^6.3.1
+  http: ^1.3.0
 
 flutter_native_splash:
   android: true
@@ -113,6 +114,28 @@ flutter:
     - assets/profile_icon/red_profile.png
     - assets/profile_icon/orange_profile.png
     - assets/profile_icon/camera.png
+    - assets/flower_img/pink_flower.png
+    - assets/flower_img/top_right_leaf.png
+    - assets/qna_button_img/q1a1.png
+    - assets/qna_button_img/q1a2.png
+    - assets/qna_button_img/q1a3.png
+    - assets/qna_button_img/q1a4.png
+    - assets/qna_button_img/q2a1.png
+    - assets/qna_button_img/q2a2.png
+    - assets/qna_button_img/q2a3.png
+    - assets/qna_button_img/q2a4.png
+    - assets/qna_button_img/q3a1.png
+    - assets/qna_button_img/q3a2.png
+    - assets/qna_button_img/q4a1.png
+    - assets/qna_button_img/q4a2.png
+    - assets/qna_button_img/q4a3.png
+    - assets/qna_button_img/q4a4.png
+    - assets/qna_button_img/q5a1.png
+    - assets/qna_button_img/q5a2.png
+    - assets/qna_button_img/q5a3.png
+    - assets/qna_button_img/q5a4.png
+    - assets/qna_button_img/temporary_img.png
+    - assets/qna_content.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
