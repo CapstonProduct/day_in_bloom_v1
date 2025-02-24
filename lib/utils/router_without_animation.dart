@@ -1,3 +1,4 @@
+import 'package:day_in_bloom_v1/features/healthreport/screen/report_category_screen.dart';
 import 'package:day_in_bloom_v1/features/mission/screen/exvideo_screen.dart';
 import 'package:day_in_bloom_v1/features/mission/screen/mission_screen.dart';
 import 'package:day_in_bloom_v1/features/notification/screen/notification_list_screen.dart';
@@ -36,6 +37,10 @@ final GoRouter appRouter = GoRouter(
             GoRoute(
               path: 'notiList',
               pageBuilder: (context, state) => NoTransitionPage(child: NotificationListScreen()),
+            ),
+            GoRoute(
+              path: 'report',
+              pageBuilder: (context, state) => NoTransitionPage(child: ReportCategoryScreen()),
             ),
           ],
         ),

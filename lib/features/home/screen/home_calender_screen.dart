@@ -42,7 +42,12 @@ class HomeCalendarScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  CalendarWidget(),
+                  CalendarWidget(
+                      onDateSelected: (selectedDate) {
+                      String formattedDate = "${selectedDate.year} / ${selectedDate.month.toString().padLeft(2, '0')} / ${selectedDate.day.toString().padLeft(2, '0')}";
+                      context.go('/homeCalendar/report?date=$formattedDate');
+                    },
+                  ),
                 ],
               ),
             ),
