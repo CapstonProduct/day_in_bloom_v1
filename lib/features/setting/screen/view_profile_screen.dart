@@ -5,13 +5,13 @@ import 'package:go_router/go_router.dart';
 class ViewProfileScreen extends StatelessWidget {
   const ViewProfileScreen({super.key});
 
-  final String userName = '윤모씨';
+  final String userName = '최예름';
   final String birthDate = '1900-00-00';
   final String gender = '여성';
 
-  final String address = '서울특별시 광진구 어딘가';
+  final String address = '서울특별시 광진구';
   final String phoneNumber = '010-1234-5678';
-  final String heightWeight = '201 cm / 102 kg';
+  final String heightWeight = '155 cm / 50 kg';
 
   final String breakfastTime = '09:00';
   final String lunchTime = '13:00';
