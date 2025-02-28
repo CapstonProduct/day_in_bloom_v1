@@ -30,7 +30,16 @@ class ReportCategoryScreen extends StatelessWidget {
                   childAspectRatio: 1,
                 ),
                 itemCount: _categories.length,
-                itemBuilder: (context, index) => ReportCategoryTile(category: _categories[index], isHighlighted: index == 0),
+                itemBuilder: (context, index) {
+                  if (index == 0 || index == 1) {
+                    return ScoreReportCategoryTile(
+                      category: _categories[index],
+                      isHighlighted: index == 0,
+                      color: index == 0 ? Colors.yellow.shade100 : Colors.grey.shade200,
+                    );
+                  }
+                  return ReportCategoryTile(category: _categories[index], isHighlighted: false);
+                },
               ),
             ),
             const SizedBox(height: 16),
@@ -81,6 +90,51 @@ class ReportCategoryTile extends StatelessWidget {
   }
 }
 
+class ScoreReportCategoryTile extends StatelessWidget {
+  final ReportCategory category;
+  final bool isHighlighted;
+  final Color color;
+
+  const ScoreReportCategoryTile({super.key, required this.category, required this.isHighlighted, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        // 클릭 이벤트 핸들링
+      },
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Stack(
+          children: [
+            Align(
+              alignment: Alignment.topLeft,
+              child: Text(
+                category.title,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: Text(
+                category.score.toString(),
+                style: Theme.of(context).textTheme.displayMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: category.color ?? Colors.black,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class DownloadReportButton extends StatelessWidget {
   const DownloadReportButton({super.key});
 
@@ -100,7 +154,7 @@ class DownloadReportButton extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              '리포트 PDF 다운로드 (누구나)',
+              '리포트 PDF 다운로드 (본인용)',
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(width: 14),
@@ -115,13 +169,15 @@ class DownloadReportButton extends StatelessWidget {
 class ReportCategory {
   final String title;
   final String imagePath;
+  final int score;
+  final Color? color;
 
-  const ReportCategory({required this.title, required this.imagePath});
+  const ReportCategory({required this.title, required this.imagePath, this.score = 0, this.color});
 }
 
 const List<ReportCategory> _categories = [
-  ReportCategory(title: '전체\n종합 점수', imagePath: 'assets/report_icon/report.png'),
-  ReportCategory(title: '스트레스\n점수', imagePath: 'assets/report_icon/headache.png'),
+  ReportCategory(title: '전체 종합 점수', imagePath: '', score: 88),
+  ReportCategory(title: '스트레스 점수', imagePath: '', score: 52, color: Colors.red),
   ReportCategory(title: '운동', imagePath: 'assets/report_icon/dumbell.png'),
   ReportCategory(title: '수면', imagePath: 'assets/report_icon/pillow.png'),
   ReportCategory(title: '보호자님\n조언', imagePath: 'assets/report_icon/family_talk.png'),
