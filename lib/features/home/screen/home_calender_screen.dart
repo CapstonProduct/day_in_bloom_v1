@@ -22,7 +22,7 @@ class HomeCalendarScreen extends StatelessWidget {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      context.go('/homeCalendar/mission');
+                      
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.orange,
@@ -33,10 +33,10 @@ class HomeCalendarScreen extends StatelessWidget {
                       elevation: 0,
                     ),
                     child: const Text(
-                      '오늘 할 일',
+                      '날짜를 클릭하여 그날의 건강 리포트를 확인하세요!',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 16,
+                        fontSize: 15,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -59,7 +59,8 @@ class HomeCalendarScreen extends StatelessWidget {
                 mainAxisSpacing: 10,
                 childAspectRatio: 2.6,
                 children: [
-                  _imgCard('내 건강 꽃발 일지\n보러 가기', 'assets/home_icon/flower_icon.png', Color(0xFFfff6d4), () {}),
+                  _imgCard('오늘의 할 일\n보러 가기', 'assets/home_icon/flower_icon.png', Color(0xFFfff6d4), 
+                            () {context.go('/homeCalendar/mission');}),
                   _imgCard('데일리\n운동 영상', 'assets/home_icon/green_youtube.png', Color(0xFFdbf2e6), 
                             () {context.go('/homeCalendar/exvideo');}),
                   _imgCard('맞춤 운동\n추천', 'assets/home_icon/dumbell.png', Color(0xFFdbf2e6), () {}),

@@ -62,7 +62,8 @@ class ReportCategoryTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // 클릭 이벤트 핸들링
+        final selectedDate = GoRouterState.of(context).uri.queryParameters['date'] ?? '';
+        context.go('${category.route}?date=$selectedDate'); 
       },
       child: Container(
         padding: const EdgeInsets.all(12),
@@ -101,7 +102,8 @@ class ScoreReportCategoryTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // 클릭 이벤트 핸들링
+        final selectedDate = GoRouterState.of(context).uri.queryParameters['date'] ?? '';
+        context.go('${category.route}?date=$selectedDate'); 
       },
       child: Container(
         padding: const EdgeInsets.all(12),
@@ -142,7 +144,7 @@ class DownloadReportButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // PDF 다운로드 이벤트 핸들링
+
       },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
@@ -171,15 +173,22 @@ class ReportCategory {
   final String imagePath;
   final int score;
   final Color? color;
+  final String route;
 
-  const ReportCategory({required this.title, required this.imagePath, this.score = 0, this.color});
+  const ReportCategory({
+    required this.title,
+    required this.imagePath,
+    this.score = 0,
+    this.color,
+    required this.route,
+  });
 }
 
 const List<ReportCategory> _categories = [
-  ReportCategory(title: '전체 종합 점수', imagePath: '', score: 88),
-  ReportCategory(title: '스트레스 점수', imagePath: '', score: 52, color: Colors.red),
-  ReportCategory(title: '운동', imagePath: 'assets/report_icon/dumbell.png'),
-  ReportCategory(title: '수면', imagePath: 'assets/report_icon/pillow.png'),
-  ReportCategory(title: '보호자님\n조언', imagePath: 'assets/report_icon/family_talk.png'),
-  ReportCategory(title: '의사 선생님\n조언', imagePath: 'assets/report_icon/doctor_talk.png'),
+  ReportCategory(title: '전체 종합 점수', imagePath: '', score: 88, route: '/homeCalendar/report/totalScore'),
+  ReportCategory(title: '스트레스 점수', imagePath: '', score: 52, color: Colors.red, route: '/homeCalendar/report/stressScore'),
+  ReportCategory(title: '운동', imagePath: 'assets/report_icon/dumbell.png', route: '/homeCalendar/report/exercise'),
+  ReportCategory(title: '수면', imagePath: 'assets/report_icon/pillow.png', route: '/homeCalendar/report/sleep'),
+  ReportCategory(title: '보호자님\n조언', imagePath: 'assets/report_icon/family_talk.png', route: '/homeCalendar/report/familyAdvice'),
+  ReportCategory(title: '의사 선생님\n조언', imagePath: 'assets/report_icon/doctor_talk.png', route: '/homeCalendar/report/doctorAdvice'),
 ];

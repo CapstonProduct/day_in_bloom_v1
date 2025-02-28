@@ -137,6 +137,9 @@ flutter:
     - assets/qna_button_img/temporary_img.png
     - assets/qna_content.json
 
+    - assets/remove_img/exercise_graph_ex.png
+    - assets/remove_img/sleep_graph_ex.png
+
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 

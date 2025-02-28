@@ -1,4 +1,10 @@
 import 'package:day_in_bloom_v1/features/healthreport/screen/report_category_screen.dart';
+import 'package:day_in_bloom_v1/features/healthreport/screen/report_doctor_advice_screen.dart';
+import 'package:day_in_bloom_v1/features/healthreport/screen/report_exercise_screen.dart';
+import 'package:day_in_bloom_v1/features/healthreport/screen/report_family_advice_screen.dart';
+import 'package:day_in_bloom_v1/features/healthreport/screen/report_sleep_screen.dart';
+import 'package:day_in_bloom_v1/features/healthreport/screen/report_stress_score_screen.dart';
+import 'package:day_in_bloom_v1/features/healthreport/screen/report_total_score_screen.dart';
 import 'package:day_in_bloom_v1/features/mission/screen/exvideo_screen.dart';
 import 'package:day_in_bloom_v1/features/mission/screen/mission_screen.dart';
 import 'package:day_in_bloom_v1/features/notification/screen/notification_list_screen.dart';
@@ -41,6 +47,32 @@ final GoRouter appRouter = GoRouter(
             GoRoute(
               path: 'report',
               pageBuilder: (context, state) => NoTransitionPage(child: ReportCategoryScreen()),
+              routes: [
+                GoRoute(
+                  path: 'totalScore',
+                  pageBuilder: (context, state) => NoTransitionPage(child: ReportTotalScoreScreen()),
+                ),
+                GoRoute(
+                  path: 'stressScore',
+                  pageBuilder: (context, state) => NoTransitionPage(child: ReportStressScoreScreen()),
+                ),
+                GoRoute(
+                  path: 'exercise',
+                  pageBuilder: (context, state) => NoTransitionPage(child: ReportExerciseScreen()),
+                ),
+                GoRoute(
+                  path: 'sleep',
+                  pageBuilder: (context, state) => NoTransitionPage(child: ReportSleepScreen()),
+                ),
+                GoRoute(
+                  path: 'familyAdvice',
+                  pageBuilder: (context, state) => NoTransitionPage(child: ReportFamilyAdviceScreen()),
+                ),
+                GoRoute(
+                  path: 'doctorAdvice',
+                  pageBuilder: (context, state) => NoTransitionPage(child: ReportDoctorAdviceScreen()),
+                ),                                                       
+              ]
             ),
           ],
         ),
