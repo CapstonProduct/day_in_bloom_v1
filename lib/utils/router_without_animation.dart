@@ -8,6 +8,8 @@ import 'package:day_in_bloom_v1/features/healthreport/screen/report_total_score_
 import 'package:day_in_bloom_v1/features/mission/screen/exvideo_screen.dart';
 import 'package:day_in_bloom_v1/features/mission/screen/mission_screen.dart';
 import 'package:day_in_bloom_v1/features/notification/screen/notification_list_screen.dart';
+import 'package:day_in_bloom_v1/features/recommendation/screen/exercise_recommendation.dart';
+import 'package:day_in_bloom_v1/features/recommendation/screen/sleep_recommendation.dart';
 import 'package:day_in_bloom_v1/features/setting/screen/logout_cancel_screen.dart';
 import 'package:day_in_bloom_v1/features/setting/screen/medical_checkup_screen.dart';
 import 'package:day_in_bloom_v1/features/setting/screen/modify_profile_screen.dart';
@@ -43,6 +45,14 @@ final GoRouter appRouter = GoRouter(
             GoRoute(
               path: 'notiList',
               pageBuilder: (context, state) => NoTransitionPage(child: NotificationListScreen()),
+            ),
+            GoRoute(
+              path: 'exerciseRecommendation',
+              pageBuilder: (context, state) => NoTransitionPage(child: ExerciseRecommendationScreen()),
+            ),
+            GoRoute(
+              path: 'sleepRecommendation',
+              pageBuilder: (context, state) => NoTransitionPage(child: SleepRecommendationScreen()),
             ),
             GoRoute(
               path: 'report',
