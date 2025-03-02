@@ -1,3 +1,4 @@
+import 'package:day_in_bloom_v1/features/authentication/screen/account_withdraw_modal.dart';
 import 'package:day_in_bloom_v1/widgets/app_bar.dart';
 import 'package:flutter/material.dart';
 
@@ -25,7 +26,7 @@ class LogoutCancelScreen extends StatelessWidget {
               title: '계정 탈퇴',
               imagePath: 'assets/setting_icon/trashcan.png',
               onTap: () {
-                
+                AccountWithdrawModal.show(context);
               },
             ),
           ],
