@@ -15,22 +15,6 @@ class HomeSettingScreen extends StatelessWidget {
           children: [
             _buildSettingOption(
               context,
-              title: '글자 크기',
-              imagePath: 'assets/setting_icon/alphabet.png',
-              onTap: () {
-                
-              },
-            ),
-            _buildSettingOption(
-              context,
-              title: '꽃 선택',
-              imagePath: 'assets/setting_icon/select_flower.png',
-              onTap: () {
-                
-              },
-            ),
-            _buildSettingOption(
-              context,
               title: '알림 설정',
               imagePath: 'assets/setting_icon/alarm_set.png',
               onTap: () {

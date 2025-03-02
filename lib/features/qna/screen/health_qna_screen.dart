@@ -3,6 +3,7 @@ import 'package:day_in_bloom_v1/widgets/vertical_img_text_button.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 
 class HealthQnaScreen extends StatefulWidget {
@@ -318,9 +319,10 @@ class _HealthQnaScreenState extends State<HealthQnaScreen> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
+                context.go('/homeCalendar');
               },
               child: Text(
-                '확인',
+                '메인으로 돌아가기',
                 style: TextStyle(fontSize: 18, color: Colors.orange),
               ),
             ),
