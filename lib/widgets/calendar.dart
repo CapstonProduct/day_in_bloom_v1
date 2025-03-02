@@ -40,7 +40,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
       ),
       calendarBuilders: CalendarBuilders(
         defaultBuilder: (context, date, events) {
-          if (date.day % 5 == 4) {
+          if (date.day % 6 == 5) {
             return Center(
               child: Text(
                 '${date.day}',
@@ -65,11 +65,12 @@ class _CalendarWidgetState extends State<CalendarWidget> {
 
 String getImagePath(DateTime date) {
   const images = {
-    0: "assets/flower_phase/flower_phase1.png",
-    1: "assets/flower_phase/flower_phase2.png",
-    2: "assets/flower_phase/flower_phase3.png",
-    3: "assets/flower_phase/flower_phase4.png"
+    0: "assets/flower_phase/flower_phase0.png",
+    1: "assets/flower_phase/flower_phase1.png",
+    2: "assets/flower_phase/flower_phase2.png",
+    3: "assets/flower_phase/flower_phase3.png",
+    4: "assets/flower_phase/flower_phase4.png",
   };
 
-  return images[date.day % 5] ?? "";
+  return images[date.day % 6] ?? "";
 }

@@ -334,7 +334,7 @@ class _HealthQnaScreenState extends State<HealthQnaScreen> {
 
   void _showSubjectiveAnswerDialog() {
     TextEditingController controller = TextEditingController();
-    controller.text = _subjectiveAnswers[_currentQuestionIndex] ?? '';  // 이전 값 불러오기
+    controller.text = _subjectiveAnswers[_currentQuestionIndex] ?? ''; 
 
     showDialog(
       context: context,
@@ -346,7 +346,7 @@ class _HealthQnaScreenState extends State<HealthQnaScreen> {
         return AlertDialog(
           title: Text("기타 답변 입력"),
           content: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0), // 좌우 패딩 추가
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: TextField(
               controller: controller,
               decoration: InputDecoration(hintText: "답변을 입력해주세요."),
@@ -358,7 +358,7 @@ class _HealthQnaScreenState extends State<HealthQnaScreen> {
             TextButton(
               onPressed: () {
                 setState(() {
-                  _subjectiveAnswers[_currentQuestionIndex] = controller.text; // 답변 저장
+                  _subjectiveAnswers[_currentQuestionIndex] = controller.text;
                 });
                 Navigator.of(context).pop();
               },
