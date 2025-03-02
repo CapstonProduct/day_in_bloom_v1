@@ -12,7 +12,7 @@ class HomeCalendarScreen extends StatelessWidget {
       appBar: CustomAppBar(title: '꽃이 되는 하루'),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView( // Column 대신 Scroll 가능하도록 수정
+        child: SingleChildScrollView( 
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -55,8 +55,8 @@ class HomeCalendarScreen extends StatelessWidget {
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
                 childAspectRatio: 2.6,
-                shrinkWrap: true, // 스크롤 뷰 내에서 사용 가능하도록 추가
-                physics: const NeverScrollableScrollPhysics(), // 스크롤이 SingleChildScrollView에서 동작하도록 설정
+                shrinkWrap: true, 
+                physics: const NeverScrollableScrollPhysics(), 
                 children: [
                   _imgCard('오늘의 할 일\n보러 가기', 'assets/home_icon/flower_icon.png', const Color(0xFFfff6d4), 
                             () {context.go('/homeCalendar/mission');}),
