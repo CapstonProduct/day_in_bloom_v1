@@ -9,8 +9,8 @@ class ModifyProfileScreen extends StatefulWidget {
 }
 
 class _ModifyProfileScreenState extends State<ModifyProfileScreen> {
-  List<bool> _isLunarSelected = [true, false];
-  List<bool> _isGenderSelected = [true, false];
+  final List<bool> _isLunarSelected = [true, false];
+  final List<bool> _isGenderSelected = [true, false];
 
   final FocusNode _nameFocus = FocusNode();
   final FocusNode _birthFocus = FocusNode();

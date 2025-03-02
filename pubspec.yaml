@@ -136,7 +136,9 @@ flutter:
     - assets/qna_button_img/q5a4.png
     - assets/qna_button_img/temporary_img.png
     - assets/qna_content.json
-
+    - assets/qna_icon/health_qna.png
+    - assets/qna_icon/qna_report.png
+    
     - assets/remove_img/exercise_graph_ex.png
     - assets/remove_img/sleep_graph_ex.png
 

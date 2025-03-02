@@ -8,6 +8,9 @@ import 'package:day_in_bloom_v1/features/healthreport/screen/report_total_score_
 import 'package:day_in_bloom_v1/features/mission/screen/exvideo_screen.dart';
 import 'package:day_in_bloom_v1/features/mission/screen/mission_screen.dart';
 import 'package:day_in_bloom_v1/features/notification/screen/notification_list_screen.dart';
+import 'package:day_in_bloom_v1/features/qna/screen/health_qna_screen.dart';
+import 'package:day_in_bloom_v1/features/qna/screen/qna_result_detail_screen.dart';
+import 'package:day_in_bloom_v1/features/qna/screen/qna_result_list_screen.dart';
 import 'package:day_in_bloom_v1/features/recommendation/screen/exercise_recommendation.dart';
 import 'package:day_in_bloom_v1/features/recommendation/screen/sleep_recommendation.dart';
 import 'package:day_in_bloom_v1/features/setting/screen/logout_cancel_screen.dart';
@@ -89,6 +92,22 @@ final GoRouter appRouter = GoRouter(
         GoRoute(
           path: '/homeQna',
           pageBuilder: (context, state) => NoTransitionPage(child: HomeQnaScreen()),
+          routes: [
+            GoRoute(
+              path: 'healthQna',
+              pageBuilder: (context, state) => NoTransitionPage(child: HealthQnaScreen()),
+            ), 
+            GoRoute(
+              path: 'healthList',
+              pageBuilder: (context, state) => NoTransitionPage(child: QnaResultListScreen()),
+              routes: [
+                GoRoute(
+                  path: 'healthDetail',
+                  pageBuilder: (context, state) => NoTransitionPage(child: QnaResultDetailScreen()),
+                ),                    
+              ]
+            ),    
+          ]
         ),
         GoRoute(
           path: '/homeSetting',
