@@ -1,3 +1,4 @@
+import 'package:day_in_bloom_v1/features/healthreport/screen/pdf_download_modal.dart';
 import 'package:day_in_bloom_v1/widgets/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -144,7 +145,7 @@ class DownloadReportButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-
+        PdfDownloadModal.show(context);
       },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
