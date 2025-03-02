@@ -12,65 +12,64 @@ class HomeCalendarScreen extends StatelessWidget {
       appBar: CustomAppBar(title: '꽃이 되는 하루'),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(height: 15),
-            Center(
-              child: Column(
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+        child: SingleChildScrollView( // Column 대신 Scroll 가능하도록 수정
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(height: 15),
+              Center(
+                child: Column(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orange,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        shadowColor: Colors.transparent,
+                        elevation: 0,
                       ),
-                      shadowColor: Colors.transparent,
-                      elevation: 0,
-                    ),
-                    child: const Text(
-                      '날짜를 클릭하여 그날의 건강 리포트를 확인하세요!',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
+                      child: const Text(
+                        '날짜를 클릭하여 그날의 건강 리포트를 확인하세요!',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  CalendarWidget(
+                    const SizedBox(height: 16),
+                    CalendarWidget(
                       onDateSelected: (selectedDate) {
-                      String formattedDate = "${selectedDate.year} / ${selectedDate.month.toString().padLeft(2, '0')} / ${selectedDate.day.toString().padLeft(2, '0')}";
-                      context.go('/homeCalendar/report?date=$formattedDate');
-                    },
-                  ),
-                ],
+                        String formattedDate = "${selectedDate.year} / ${selectedDate.month.toString().padLeft(2, '0')} / ${selectedDate.day.toString().padLeft(2, '0')}";
+                        context.go('/homeCalendar/report?date=$formattedDate');
+                      },
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            Expanded(
-              child: GridView.count(
+              const SizedBox(height: 20),
+              GridView.count(
                 crossAxisCount: 2,
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
                 childAspectRatio: 2.6,
+                shrinkWrap: true, // 스크롤 뷰 내에서 사용 가능하도록 추가
+                physics: const NeverScrollableScrollPhysics(), // 스크롤이 SingleChildScrollView에서 동작하도록 설정
                 children: [
-                  _imgCard('오늘의 할 일\n보러 가기', 'assets/home_icon/flower_icon.png', Color(0xFFfff6d4), 
+                  _imgCard('오늘의 할 일\n보러 가기', 'assets/home_icon/flower_icon.png', const Color(0xFFfff6d4), 
                             () {context.go('/homeCalendar/mission');}),
-                  _imgCard('데일리\n운동 영상', 'assets/home_icon/green_youtube.png', Color(0xFFdbf2e6), 
+                  _imgCard('데일리\n운동 영상', 'assets/home_icon/green_youtube.png', const Color(0xFFdbf2e6), 
                             () {context.go('/homeCalendar/exvideo');}),
-                  _imgCard('맞춤 운동\n추천', 'assets/home_icon/dumbell.png', Color(0xFFdbf2e6), 
+                  _imgCard('맞춤 운동\n추천', 'assets/home_icon/dumbell.png', const Color(0xFFdbf2e6), 
                             () {context.go('/homeCalendar/exerciseRecommendation');}),
-                  _imgCard('수면 패턴에\n따른 행동 추천', 'assets/home_icon/pillow.png', Color(0xFFfff6d4), 
+                  _imgCard('수면 패턴에\n따른 행동 추천', 'assets/home_icon/pillow.png', const Color(0xFFfff6d4), 
                             () {context.go('/homeCalendar/sleepRecommendation');}),
                 ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
