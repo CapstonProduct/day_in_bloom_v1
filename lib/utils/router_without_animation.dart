@@ -1,3 +1,5 @@
+import 'package:day_in_bloom_v1/features/authentication/screen/login_screen.dart';
+import 'package:day_in_bloom_v1/features/authentication/screen/input_user_info_screen.dart';
 import 'package:day_in_bloom_v1/features/healthreport/screen/report_category_screen.dart';
 import 'package:day_in_bloom_v1/features/healthreport/screen/report_doctor_advice_screen.dart';
 import 'package:day_in_bloom_v1/features/healthreport/screen/report_exercise_screen.dart';
@@ -25,9 +27,21 @@ import 'package:day_in_bloom_v1/features/home/screen/home_calender_screen.dart';
 import 'package:day_in_bloom_v1/features/home/screen/home_qna_screen.dart';
 import 'package:day_in_bloom_v1/features/home/screen/home_setting_screen.dart';
 
+bool isFirstLogin = true;  // 유저의 첫 로그인 여부
+
 final GoRouter appRouter = GoRouter(
-  initialLocation: '/homeCalendar',
+  initialLocation: '/login',
   routes: [
+    GoRoute(
+      path: '/login',
+      pageBuilder: (context, state) => NoTransitionPage(child: LoginScreen()),
+      routes: [
+        GoRoute(
+          path: 'inputUserInfo',
+          pageBuilder: (context, state) => NoTransitionPage(child: InputUserInfoScreen()),
+        ),
+      ],
+    ),
     ShellRoute(
       builder: (context, state, child) {
         return MainScreen(child: child);
