@@ -1,5 +1,6 @@
 import 'package:day_in_bloom_v1/features/authentication/screen/login_screen.dart';
 import 'package:day_in_bloom_v1/features/authentication/screen/input_user_info_screen.dart';
+import 'package:day_in_bloom_v1/features/deviceinfo/screen/battery_status_screen.dart';
 import 'package:day_in_bloom_v1/features/healthreport/screen/report_category_screen.dart';
 import 'package:day_in_bloom_v1/features/healthreport/screen/report_doctor_advice_screen.dart';
 import 'package:day_in_bloom_v1/features/healthreport/screen/report_exercise_screen.dart';
@@ -71,6 +72,10 @@ final GoRouter appRouter = GoRouter(
               path: 'sleepRecommendation',
               pageBuilder: (context, state) => NoTransitionPage(child: SleepRecommendationScreen()),
             ),
+            GoRoute(
+              path: 'batteryStatus',
+              pageBuilder: (context, state) => NoTransitionPage(child: BatteryStatusScreen()),
+            ),            
             GoRoute(
               path: 'report',
               pageBuilder: (context, state) => NoTransitionPage(child: ReportCategoryScreen()),
