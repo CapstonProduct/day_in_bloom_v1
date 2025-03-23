@@ -61,89 +61,6 @@ class MissionScreen extends StatelessWidget {
     );
   }
 
-  // Widget _buildSettingOption(
-  //   BuildContext context, {
-  //   required String title,
-  //   required String imagePath,
-  //   required VoidCallback onTap,
-  // }) {
-  //   bool isChecked = false;
-
-  //   return StatefulBuilder(
-  //     builder: (context, setState) {
-  //       return GestureDetector(
-  //         onTap: onTap,
-  //         child: Container(
-  //           margin: const EdgeInsets.symmetric(vertical: 12),
-  //           decoration: BoxDecoration(
-  //             color: const Color(0xFFf6f9f7),
-  //             borderRadius: BorderRadius.circular(12),
-  //             boxShadow: [
-  //               BoxShadow(
-  //                 color: Colors.grey.withOpacity(0.5),
-  //                 blurRadius: 4,
-  //                 offset: const Offset(0, 2),
-  //               ),
-  //             ],
-  //           ),
-  //           child: Row(
-  //             children: [
-  //               Container(
-  //                 width: 8,
-  //                 height: 75,
-  //                 decoration: BoxDecoration(
-  //                   color: const Color(0xFF41af7a),
-  //                   borderRadius: const BorderRadius.only(
-  //                     topLeft: Radius.circular(12),
-  //                     bottomLeft: Radius.circular(12),
-  //                   ),
-  //                 ),
-  //               ),
-  //               Expanded(
-  //                 child: Padding(
-  //                   padding: const EdgeInsets.symmetric(
-  //                       horizontal: 16, vertical: 16),
-  //                   child: Row(
-  //                     children: [
-  //                       Image.asset(
-  //                         imagePath,
-  //                         width: 45,
-  //                         height: 45,
-  //                       ),
-  //                       const SizedBox(width: 15),
-  //                       Expanded(
-  //                         child: Text(
-  //                           title,
-  //                           style: const TextStyle(
-  //                             fontSize: 15,
-  //                             fontWeight: FontWeight.w500,
-  //                           ),
-  //                         ),
-  //                       ),
-  //                     ],
-  //                   ),
-  //                 ),
-  //               ),
-  //               Padding(
-  //                 padding: const EdgeInsets.only(right: 16),
-  //                 child: Checkbox(
-  //                   value: isChecked,
-  //                   onChanged: (value) {
-  //                     setState(() {
-  //                       isChecked = value ?? false;
-  //                     });
-  //                   },
-  //                   activeColor: Colors.teal,
-  //                 ),
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
-
   Widget _buildSettingOption(
     BuildContext context, {
     required String title,
@@ -192,14 +109,15 @@ class MissionScreen extends StatelessWidget {
                           width: 45,
                           height: 45,
                         ),
-                        Opacity(
-                          opacity: 0.6,
-                          child: Icon(
-                            isChecked ? Icons.check_circle : Icons.cancel,
-                            color: isChecked ? Colors.green : Colors.red,
-                            size: 40,
+                        if (isChecked)
+                          Opacity(
+                            opacity: 0.6,
+                            child: Icon(
+                              Icons.check_circle,
+                              color: Colors.green,
+                              size: 40,
+                            ),
                           ),
-                        ),
                       ],
                     ),
                     const SizedBox(width: 15),
@@ -229,6 +147,5 @@ class MissionScreen extends StatelessWidget {
       ),
     );
   }
-
 
 }
