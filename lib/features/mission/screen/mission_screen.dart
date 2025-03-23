@@ -9,7 +9,7 @@ class MissionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: '오늘 할 일'),
+      appBar: CustomAppBar(title: '꽃이 되는 하루'),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
@@ -71,7 +71,7 @@ class MissionScreen extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 12),
+        margin: const EdgeInsets.symmetric(vertical: 20),
         decoration: BoxDecoration(
           color: const Color(0xFFf6f9f7),
           borderRadius: BorderRadius.circular(12),

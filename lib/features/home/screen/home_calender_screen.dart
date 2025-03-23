@@ -9,7 +9,7 @@ class HomeCalendarScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: '꽃이 되는 하루'),
+      appBar: CustomAppBar(title: '건강 꽃밭 일지'),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView( 
