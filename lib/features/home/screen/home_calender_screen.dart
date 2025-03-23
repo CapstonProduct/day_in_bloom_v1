@@ -43,7 +43,13 @@ class HomeCalendarScreen extends StatelessWidget {
                     CalendarWidget(
                       onDateSelected: (selectedDate) {
                         String formattedDate = "${selectedDate.year} / ${selectedDate.month.toString().padLeft(2, '0')} / ${selectedDate.day.toString().padLeft(2, '0')}";
-                        context.go('/homeCalendar/report?date=$formattedDate');
+                        final now = DateTime.now();
+                        final difference = now.difference(selectedDate).inDays;
+                        if (difference <= 30) {  // 오늘 날짜로부터 30일 이내
+                          context.go('/homeCalendar/report?date=$formattedDate');
+                        } else {  // 오늘 날짜로부터 30일보다 이전
+                          context.go('/homeCalendar/ago30plusReport?date=$formattedDate');
+                        }
                       },
                     ),
                   ],
