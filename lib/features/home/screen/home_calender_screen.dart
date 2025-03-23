@@ -50,23 +50,27 @@ class HomeCalendarScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              GridView.count(
-                crossAxisCount: 2,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                childAspectRatio: 2.6,
-                shrinkWrap: true, 
-                physics: const NeverScrollableScrollPhysics(), 
-                children: [
-                  _imgCard('오늘의 할 일\n보러 가기', 'assets/home_icon/flower_icon.png', const Color(0xFFfff6d4), 
-                            () {context.go('/homeCalendar/mission');}),
-                  _imgCard('데일리\n운동 영상', 'assets/home_icon/green_youtube.png', const Color(0xFFdbf2e6), 
-                            () {context.go('/homeCalendar/exvideo');}),
-                  _imgCard('맞춤 운동\n추천', 'assets/home_icon/dumbell.png', const Color(0xFFdbf2e6), 
-                            () {context.go('/homeCalendar/exerciseRecommendation');}),
-                  _imgCard('수면 패턴에\n따른 행동 추천', 'assets/home_icon/pillow.png', const Color(0xFFfff6d4), 
-                            () {context.go('/homeCalendar/sleepRecommendation');}),
-                ],
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 5),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(color: Colors.teal),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      '🌿 캘린더 마커의 의미',
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      '미션 1개 달성 → 씨앗\n미션 2개 달성 → 싹이 나온 씨앗\n미션 3개 달성 → 새싹\n미션 4개 달성 → 나뭇잎\n미션 5개 달성 → 꽃',
+                      style: TextStyle(fontSize: 14),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

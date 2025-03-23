@@ -39,7 +39,7 @@ class _InputUserInfoScreenState extends State<InputUserInfoScreen> {
 
     print("사용자 정보: $userInfo");
 
-    context.go('/homeCalendar');
+    context.go('/main');
   }
 
   @override

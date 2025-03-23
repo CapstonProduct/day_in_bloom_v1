@@ -109,7 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         if (isFirstLogin) {
                           context.go('/login/inputUserInfo');
                         } else {
-                          context.go('/homeCalendar');
+                          context.go('/main');
                         }
                       },
                       child: const Text(

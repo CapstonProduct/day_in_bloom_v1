@@ -49,6 +49,10 @@ final GoRouter appRouter = GoRouter(
       },
       routes: [
         GoRoute(
+          path: '/main',
+          pageBuilder: (context, state) => NoTransitionPage(child: MissionScreen()),
+        ),
+        GoRoute(
           path: '/homeCalendar',
           pageBuilder: (context, state) => NoTransitionPage(child: HomeCalendarScreen()),
           routes: [
