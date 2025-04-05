@@ -14,7 +14,7 @@ class _InputUserInfoScreenState extends State<InputUserInfoScreen> {
     "이름": TextEditingController(),
     "키 (cm)": TextEditingController(),
     "체중 (kg)": TextEditingController(),
-    "나이 (세)": TextEditingController(),
+    "생년월일": TextEditingController(),
   };
 
   String? _selectedGender;
@@ -33,7 +33,7 @@ class _InputUserInfoScreenState extends State<InputUserInfoScreen> {
       "이름": _controllers["이름"]!.text,
       "키": _controllers["키 (cm)"]!.text,
       "체중": _controllers["체중 (kg)"]!.text,
-      "나이": _controllers["나이 (세)"]!.text,
+      "생년월일": _controllers["생년월일"]!.text,
       "성별": _selectedGender,
     };
 
@@ -119,6 +119,10 @@ class _InputUserInfoScreenState extends State<InputUserInfoScreen> {
                 alignment: AlignmentDirectional.bottomStart,
                 dropdownColor: Colors.white,
               ),
+              const SizedBox(height: 30),
+              Text(
+                "입력하신 정보는 건강 분석에 활용되오니,\n반드시 정확한 정보를 입력해주세요 ^_^",
+                textAlign: TextAlign.center),
               const SizedBox(height: 30),
               Center(
                 child: SizedBox(
