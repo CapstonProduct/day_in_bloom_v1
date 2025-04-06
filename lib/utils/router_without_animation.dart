@@ -29,8 +29,6 @@ import 'package:day_in_bloom_v1/features/home/screen/home_calender_screen.dart';
 import 'package:day_in_bloom_v1/features/home/screen/home_qna_screen.dart';
 import 'package:day_in_bloom_v1/features/home/screen/home_setting_screen.dart';
 
-bool isFirstLogin = true;  // 유저의 첫 로그인 여부
-
 GoRouter appRouter(String initialLocation) => GoRouter(
   initialLocation: initialLocation,
   routes: [
