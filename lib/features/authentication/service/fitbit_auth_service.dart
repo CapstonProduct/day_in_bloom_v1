@@ -1,8 +1,10 @@
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
-import 'package:http/http.dart' as http;
+import 'dart:async';
 import 'dart:convert';
+import 'package:day_in_bloom_v1/features/authentication/service/myinapp_browser.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
 
 class FitbitAuthService {
   static final FlutterSecureStorage _storage = FlutterSecureStorage();
@@ -34,63 +36,63 @@ class FitbitAuthService {
         '&scope=$scopes'
         '&prompt=login';
 
-    final result = await FlutterWebAuth2.authenticate(
-      url: authUrl,
-      callbackUrlScheme: "myapp",
+    final completer = Completer<Map<String, dynamic>?>();
+    
+    final browser = MyInAppBrowser(onRedirect: (url) async {
+      final code = Uri.parse(url).queryParameters['code'];
+      if (code == null) {
+        completer.completeError(Exception('코드가 없음'));
+        return;
+      }
+
+      final response = await http.post(
+        Uri.parse('https://api.fitbit.com/oauth2/token'),
+        headers: {
+          'Authorization': 'Basic ${base64Encode(utf8.encode('$clientId:$clientSecret'))}',
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: {
+          'client_id': clientId,
+          'grant_type': 'authorization_code',
+          'redirect_uri': redirectUri,
+          'code': code,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final tokenData = jsonDecode(response.body);
+        final accessToken = tokenData['access_token'];
+        final refreshToken = tokenData['refresh_token'];
+
+        await _storage.write(key: 'access_token', value: accessToken);
+        await _storage.write(key: 'refresh_token', value: refreshToken);
+        await _storage.write(key: 'is_first_login', value: 'true');
+        await _storage.write(key: 'auto_login', value: autoLogin.toString());
+
+        completer.complete({
+          "access_token": accessToken,
+          "refresh_token": refreshToken,
+        });
+      } else {
+        completer.completeError(Exception('토큰 교환 실패: ${response.body}'));
+      }
+    });
+
+    await browser.openUrlRequest(
+      urlRequest: URLRequest(
+        url: WebUri(authUrl),
+      ),
     );
 
-    final code = Uri.parse(result).queryParameters['code'];
-
-    final response = await http.post(
-      Uri.parse('https://api.fitbit.com/oauth2/token'),
-      headers: {
-        'Authorization':
-            'Basic ${base64Encode(utf8.encode('$clientId:$clientSecret'))}',
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: {
-        'client_id': clientId,
-        'grant_type': 'authorization_code',
-        'redirect_uri': redirectUri,
-        'code': code,
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final tokenData = jsonDecode(response.body);
-      final accessToken = tokenData['access_token'];
-      final refreshToken = tokenData['refresh_token'];
-
-      await _storage.write(key: 'access_token', value: accessToken);
-      await _storage.write(key: 'refresh_token', value: refreshToken);
-      await _storage.write(key: 'is_first_login', value: 'true');
-      await _storage.write(key: 'auto_login', value: autoLogin.toString());
-
-      return {
-        "access_token": accessToken,
-        "refresh_token": refreshToken,
-      };
-    } else {
-      throw Exception('토큰 교환 실패: ${response.body}');
-    }
+    return completer.future;
   }
 
   static Future<void> logout() async {
     await _storage.deleteAll();
   }
 
-  static Future<bool> isFirstLogin() async {
-    final flag = await _storage.read(key: 'is_first_login');
-    return flag == 'true';
-  }
-
-  static Future<void> setFirstLoginDone() async {
-    await _storage.write(key: 'is_first_login', value: 'false');
-  }
-
-
   static Future<String?> getAccessToken() async {
-  return await _storage.read(key: 'access_token');
+    return await _storage.read(key: 'access_token');
   }
 
   static Future<String?> getRefreshToken() async {
@@ -113,5 +115,14 @@ class FitbitAuthService {
       print('사용자 정보 요청 실패: ${response.statusCode} - ${response.body}');
       return null;
     }
+  }
+
+  static Future<bool> isUserInfoEntered() async {
+    final result = await _storage.read(key: 'user_info_entered');
+    return result == 'true';
+  }
+
+  static Future<void> setUserInfoEntered() async {
+    await _storage.write(key: 'user_info_entered', value: 'true');
   }
 }

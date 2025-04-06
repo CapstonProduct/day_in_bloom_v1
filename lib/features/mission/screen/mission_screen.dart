@@ -19,7 +19,11 @@ class MissionScreen extends StatelessWidget {
         ]),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
+            return const Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
           }
           if (!snapshot.hasData || snapshot.data == null) {
             return const Text("로그인 정보 없음");

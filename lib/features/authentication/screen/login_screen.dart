@@ -130,8 +130,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () async {
                         try {
                           final result = await FitbitAuthService.loginWithFitbit(autoLogin: _autoLogin);
-                          final isFirst = await FitbitAuthService.isFirstLogin();
-                          if (isFirst) {
+                          final alreadyEntered = await FitbitAuthService.isUserInfoEntered();
+                          if (!mounted) return;
+
+                          if (!alreadyEntered) {
                             context.go('/login/inputUserInfo');
                           } else {
                             context.go('/main');

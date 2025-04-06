@@ -1,5 +1,4 @@
 import 'package:day_in_bloom_v1/features/authentication/service/fitbit_auth_service.dart';
-import 'package:day_in_bloom_v1/widgets/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -40,8 +39,8 @@ class _InputUserInfoScreenState extends State<InputUserInfoScreen> {
 
     print("사용자 정보: $userInfo");
 
-    FitbitAuthService.setFirstLoginDone();
-    
+    FitbitAuthService.setUserInfoEntered();
+
     context.go('/main');
   }
 
