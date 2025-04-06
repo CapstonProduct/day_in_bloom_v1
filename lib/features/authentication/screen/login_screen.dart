@@ -19,8 +19,6 @@ class _LoginScreenState extends State<LoginScreen> {
     "4. Fitbit 추가 서비스 약관과\n개인정보에 관한 사항을 확인하세요."
   ];
 
-  bool isFirstLogin = true;
-
   bool _autoLogin = false;
 
   @override
