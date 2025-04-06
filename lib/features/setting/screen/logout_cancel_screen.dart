@@ -1,6 +1,8 @@
 import 'package:day_in_bloom_v1/features/authentication/screen/account_withdraw_modal.dart';
+import 'package:day_in_bloom_v1/features/authentication/service/fitbit_auth_service.dart';
 import 'package:day_in_bloom_v1/widgets/app_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class LogoutCancelScreen extends StatelessWidget {
   const LogoutCancelScreen({super.key});
@@ -17,8 +19,11 @@ class LogoutCancelScreen extends StatelessWidget {
               context,
               title: '계정 로그아웃 (나가기)',
               imagePath: 'assets/setting_icon/logout.png',
-              onTap: () {
-                
+              onTap: () async {
+                await FitbitAuthService.logout(); 
+                if (context.mounted) {
+                  context.go('/login'); 
+                }
               },
             ),
             _buildSettingOption(

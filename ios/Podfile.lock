@@ -9,7 +9,14 @@ PODS:
     - OrderedSet (~> 6.0.3)
   - flutter_native_splash (2.4.3):
     - Flutter
+  - flutter_secure_storage (6.0.0):
+    - Flutter
+  - flutter_web_auth_2 (3.0.0):
+    - Flutter
   - OrderedSet (6.0.3)
+  - path_provider_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
   - url_launcher_ios (0.0.1):
     - Flutter
 
@@ -17,6 +24,9 @@ DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_inappwebview_ios (from `.symlinks/plugins/flutter_inappwebview_ios/ios`)
   - flutter_native_splash (from `.symlinks/plugins/flutter_native_splash/ios`)
+  - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
+  - flutter_web_auth_2 (from `.symlinks/plugins/flutter_web_auth_2/ios`)
+  - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
 
 SPEC REPOS:
@@ -30,15 +40,24 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_inappwebview_ios/ios"
   flutter_native_splash:
     :path: ".symlinks/plugins/flutter_native_splash/ios"
+  flutter_secure_storage:
+    :path: ".symlinks/plugins/flutter_secure_storage/ios"
+  flutter_web_auth_2:
+    :path: ".symlinks/plugins/flutter_web_auth_2/ios"
+  path_provider_foundation:
+    :path: ".symlinks/plugins/path_provider_foundation/darwin"
   url_launcher_ios:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  flutter_inappwebview_ios: 6f63631e2c62a7c350263b13fa5427aedefe81d4
-  flutter_native_splash: f71420956eb811e6d310720fee915f1d42852e7a
+  flutter_inappwebview_ios: b89ba3482b96fb25e00c967aae065701b66e9b99
+  flutter_native_splash: 6cad9122ea0fad137d23137dd14b937f3e90b145
+  flutter_secure_storage: 1ed9476fba7e7a782b22888f956cce43e2c62f13
+  flutter_web_auth_2: 5c8d9dcd7848b5a9efb086d24e7a9adcae979c80
   OrderedSet: e539b66b644ff081c73a262d24ad552a69be3a94
-  url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
+  path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
+  url_launcher_ios: 694010445543906933d732453a59da0a173ae33d
 
 PODFILE CHECKSUM: 819463e6a0290f5a72f145ba7cde16e8b6ef0796
 

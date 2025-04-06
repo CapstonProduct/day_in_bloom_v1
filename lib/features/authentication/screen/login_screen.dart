@@ -1,3 +1,4 @@
+import 'package:day_in_bloom_v1/features/authentication/service/fitbit_auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -104,12 +105,24 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.orange,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-                      ),
-                      onPressed: () {
-                        if (isFirstLogin) {
-                          context.go('/login/inputUserInfo');
-                        } else {
-                          context.go('/main');
+                      ),                      
+                      onPressed: () async {
+                        try {
+                          final result = await FitbitAuthService.loginWithFitbit();
+                          if (result != null) {
+                            final isFirst = await FitbitAuthService.isFirstLogin();
+                            if (!mounted) return;
+                            if (isFirst) {
+                              context.go('/login/inputUserInfo');
+                            } else {
+                              context.go('/main');
+                            }
+                          }
+                        } catch (e) {
+                          print("로그인 에러: $e");
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("로그인 실패. 다시 시도해주세요.")),
+                          );
                         }
                       },
                       child: const Text(

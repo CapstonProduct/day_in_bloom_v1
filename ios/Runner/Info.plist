@@ -53,5 +53,21 @@
 			<key>NSAllowsArbitraryLoads</key>
 			<true/>
 		</dict>
+		<!--Fitbit OAuth 로그인-->
+		<key>CFBundleURLTypes</key>
+		<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+			<string>myapp</string>
+			</array>
+		</dict>
+		</array>
+		<!--로컬 네트워크 에러 제거-->
+		<key>NSLocalNetworkUsageDescription</key>
+		<string>Flutter 디버그 서비스를 위해 로컬 네트워크 접근이 필요합니다.</string>
+
 	</dict>
 </plist>
