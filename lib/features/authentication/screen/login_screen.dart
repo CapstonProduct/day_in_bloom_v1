@@ -21,6 +21,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool isFirstLogin = true;
 
+  bool _autoLogin = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,6 +98,25 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Checkbox(
+                      value: _autoLogin,
+                      onChanged: (value) {
+                        setState(() {
+                          _autoLogin = value!;
+                        });
+                      },
+                      activeColor: Colors.orange,
+                    ),
+                    const Text(
+                      "자동 로그인은 네모를 클릭해주세요.",
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 5),
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: SizedBox(
@@ -108,15 +129,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),                      
                       onPressed: () async {
                         try {
-                          final result = await FitbitAuthService.loginWithFitbit();
-                          if (result != null) {
-                            final isFirst = await FitbitAuthService.isFirstLogin();
-                            if (!mounted) return;
-                            if (isFirst) {
-                              context.go('/login/inputUserInfo');
-                            } else {
-                              context.go('/main');
-                            }
+                          final result = await FitbitAuthService.loginWithFitbit(autoLogin: _autoLogin);
+                          final isFirst = await FitbitAuthService.isFirstLogin();
+                          if (isFirst) {
+                            context.go('/login/inputUserInfo');
+                          } else {
+                            context.go('/main');
                           }
                         } catch (e) {
                           print("로그인 에러: $e");

@@ -1,23 +1,31 @@
-import 'dart:convert';
-import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:http/http.dart' as http;
-import 'package:url_launcher/url_launcher.dart';
+import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class FitbitAuthService {
-  static final _storage = FlutterSecureStorage();
+  static final FlutterSecureStorage _storage = FlutterSecureStorage();
 
-  static Future<bool> isLoggedIn() async {
-    final token = await _storage.read(key: 'access_token');
-    return token != null;
+  static Future<void> clearIfNotAutoLogin() async {
+    final autoLogin = await _storage.read(key: 'auto_login');
+    if (autoLogin != 'true') {
+      await logout();
+    }
   }
 
-  static Future<Map<String, dynamic>?> loginWithFitbit() async {
+  static Future<bool> isLoggedIn() async {
+    final autoLogin = await _storage.read(key: 'auto_login');
+    final token = await _storage.read(key: 'access_token');
+    return autoLogin == 'true' && token != null;
+  }
+
+  static Future<Map<String, dynamic>?> loginWithFitbit({required bool autoLogin}) async {
     final clientId = dotenv.env['FITBIT_CLIENT_ID']!;
     final clientSecret = dotenv.env['FITBIT_CLIENT_SECRET']!;
     const redirectUri = 'myapp://callback';
     const scopes = 'activity heartrate sleep profile';
+
     final authUrl =
         'https://www.fitbit.com/oauth2/authorize'
         '?response_type=code'
@@ -53,11 +61,10 @@ class FitbitAuthService {
       final accessToken = tokenData['access_token'];
       final refreshToken = tokenData['refresh_token'];
 
-      final isFirst = await _storage.read(key: 'access_token') == null;
-
       await _storage.write(key: 'access_token', value: accessToken);
       await _storage.write(key: 'refresh_token', value: refreshToken);
-      await _storage.write(key: 'is_first_login', value: isFirst ? 'true' : 'false');
+      await _storage.write(key: 'is_first_login', value: 'true');
+      await _storage.write(key: 'auto_login', value: autoLogin.toString());
 
       return {
         "access_token": accessToken,
@@ -66,6 +73,10 @@ class FitbitAuthService {
     } else {
       throw Exception('토큰 교환 실패: ${response.body}');
     }
+  }
+
+  static Future<void> logout() async {
+    await _storage.deleteAll();
   }
 
   static Future<bool> isFirstLogin() async {
@@ -77,8 +88,9 @@ class FitbitAuthService {
     await _storage.write(key: 'is_first_login', value: 'false');
   }
 
+
   static Future<String?> getAccessToken() async {
-    return await _storage.read(key: 'access_token');
+  return await _storage.read(key: 'access_token');
   }
 
   static Future<String?> getRefreshToken() async {
@@ -101,14 +113,5 @@ class FitbitAuthService {
       print('사용자 정보 요청 실패: ${response.statusCode} - ${response.body}');
       return null;
     }
-  }
-
-  static Future<void> logout() async {
-    await _storage.deleteAll();
-
-    // final logoutUri = Uri.parse('https://www.fitbit.com/logout?redirect=/logout_complete');
-    // if (await canLaunchUrl(logoutUri)) {
-    //   await launchUrl(logoutUri, mode: LaunchMode.externalApplication);
-    // }
   }
 }

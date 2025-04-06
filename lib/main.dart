@@ -5,36 +5,51 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:day_in_bloom_v1/features/authentication/service/fitbit_auth_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   await dotenv.load(fileName: "assets/.env");
 
+  await FitbitAuthService.clearIfNotAutoLogin(); 
+
   FlutterNativeSplash.remove();
-  
-  runApp(MyApp());
+  runApp(const MyApp());
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
-      routerConfig: appRouter,
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: const [
-        Locale('ko', 'KR'),
-      ],
-      theme: ThemeData(
-        scaffoldBackgroundColor: Colors.white,
-      ),
+    return FutureBuilder<bool>(
+      future: FitbitAuthService.isLoggedIn(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const MaterialApp(
+            home: Scaffold(body: Center(child: CircularProgressIndicator())),
+          );
+        }
+
+        final initialLocation = snapshot.data! ? '/main' : '/login';
+
+        return MaterialApp.router(
+          debugShowCheckedModeBanner: false,
+          routerConfig: appRouter(initialLocation),
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('ko', 'KR'),
+          ],
+          theme: ThemeData(
+            scaffoldBackgroundColor: Colors.white,
+          ),
+        );
+      },
     );
   }
 }
