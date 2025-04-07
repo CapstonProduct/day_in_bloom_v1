@@ -14,9 +14,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final PageController _pageController = PageController();
   final List<String> guideTexts = [
     "1. Fitbit 로그인 버튼을 누른 후\nGoogle 아이디로 로그인하세요.",
-    "2. Google 계정의 비밀번호를 입력하세요.",
-    "3. Google 서비스 약관을 확인하고,\n필요한 부분에 동의하세요.",
-    "4. Fitbit 추가 서비스 약관과\n개인정보에 관한 사항을 확인하세요."
+    "2. Google 계정 정보를 입력하세요.",
+    "3. 첫 로그인 이후에는\n저장된 Google 계정으로\n간편하게 로그인 할 수 있어요.",
   ];
 
   bool _autoLogin = false;
