@@ -39,13 +39,17 @@ class FitbitAuthService {
     final completer = Completer<Map<String, dynamic>?>();
     
     final browser = MyInAppBrowser(onRedirect: (url) async {
+      if (completer.isCompleted) return;
+
       final code = Uri.parse(url).queryParameters['code'];
       if (code == null) {
-        completer.completeError(Exception('코드가 없음'));
+        if (!completer.isCompleted) {
+          completer.completeError(Exception('코드가 없음'));
+        }
         return;
       }
 
-      final response = await http.post(
+      final tokenResponse = await http.post(
         Uri.parse('https://api.fitbit.com/oauth2/token'),
         headers: {
           'Authorization': 'Basic ${base64Encode(utf8.encode('$clientId:$clientSecret'))}',
@@ -59,32 +63,88 @@ class FitbitAuthService {
         },
       );
 
-      if (response.statusCode == 200) {
-        final tokenData = jsonDecode(response.body);
-        final accessToken = tokenData['access_token'];
-        final refreshToken = tokenData['refresh_token'];
+      if (tokenResponse.statusCode != 200) {
+        if (!completer.isCompleted) {
+          completer.completeError(Exception('토큰 교환 실패: ${tokenResponse.body}'));
+        }
+        return;
+      }
 
-        await _storage.write(key: 'access_token', value: accessToken);
-        await _storage.write(key: 'refresh_token', value: refreshToken);
-        await _storage.write(key: 'is_first_login', value: 'true');
-        await _storage.write(key: 'auto_login', value: autoLogin.toString());
+      final tokenData = jsonDecode(tokenResponse.body);
+      final accessToken = tokenData['access_token'];
+      final refreshToken = tokenData['refresh_token'];
+      final tokenType = tokenData['token_type'];
+      final expiresIn = tokenData['expires_in'];
 
-        completer.complete({
-          "access_token": accessToken,
-          "refresh_token": refreshToken,
-        });
-      } else {
-        completer.completeError(Exception('토큰 교환 실패: ${response.body}'));
+      final fitbitUserId = await _getUserId(accessToken);
+      if (fitbitUserId == null) {
+        if (!completer.isCompleted) {
+          completer.completeError(Exception('Fitbit 사용자 정보 가져오기 실패'));
+        }
+        return;
+      }
+
+      await _storage.write(key: 'access_token', value: accessToken);
+      await _storage.write(key: 'refresh_token', value: refreshToken);
+      await _storage.write(key: 'is_first_login', value: 'true');
+      await _storage.write(key: 'auto_login', value: autoLogin.toString());
+
+      final sendingJsonData = {
+        "userId": "my_user_123",
+        "fitbit_user_id": fitbitUserId,
+        "access_token": accessToken,
+        "refresh_token": refreshToken,
+        "token_type": tokenType,
+        "expires_in": expiresIn,
+      };
+
+      final prettyJson = const JsonEncoder.withIndent('  ').convert(sendingJsonData);
+      print(prettyJson);
+
+      try {
+        final response = await http.post(
+          Uri.parse(dotenv.env['AUTH_API_GATEWAY_URL']!),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode(sendingJsonData),
+        );
+
+        final decodedBody = utf8.decode(response.bodyBytes);
+
+        if (response.statusCode == 200) {
+          print("람다 전송 성공: $decodedBody");
+        } else {
+          print("람다 전송 실패: ${response.statusCode} - $decodedBody");
+        }
+      } catch (e) {
+        print("람다 호출 에러: $e");
+      }
+
+
+      if (!completer.isCompleted) {
+        completer.complete(sendingJsonData);
       }
     });
 
     await browser.openUrlRequest(
-      urlRequest: URLRequest(
-        url: WebUri(authUrl),
-      ),
+      urlRequest: URLRequest(url: WebUri(authUrl)),
     );
 
     return completer.future;
+  }
+
+  static Future<String?> _getUserId(String accessToken) async {
+    final response = await http.get(
+      Uri.parse('https://api.fitbit.com/1/user/-/profile.json'),
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      return json['user']['encodedId'];
+    } else {
+      print('사용자 정보 요청 실패: ${response.statusCode} - ${response.body}');
+      return null;
+    }
   }
 
   static Future<void> logout() async {
@@ -100,21 +160,9 @@ class FitbitAuthService {
   }
 
   static Future<String?> getUserId() async {
-    final token = await _storage.read(key: 'access_token');
+    final token = await getAccessToken();
     if (token == null) return null;
-
-    final response = await http.get(
-      Uri.parse('https://api.fitbit.com/1/user/-/profile.json'),
-      headers: {'Authorization': 'Bearer $token'},
-    );
-
-    if (response.statusCode == 200) {
-      final json = jsonDecode(response.body);
-      return json['user']['encodedId'];
-    } else {
-      print('사용자 정보 요청 실패: ${response.statusCode} - ${response.body}');
-      return null;
-    }
+    return await _getUserId(token);
   }
 
   static Future<bool> isUserInfoEntered() async {
