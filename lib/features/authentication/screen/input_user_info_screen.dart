@@ -1,6 +1,9 @@
 import 'package:day_in_bloom_v1/features/authentication/service/fitbit_auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class InputUserInfoScreen extends StatefulWidget {
   const InputUserInfoScreen({super.key});
@@ -20,9 +23,8 @@ class _InputUserInfoScreenState extends State<InputUserInfoScreen> {
   String? _selectedGender;
   final List<String> _genders = ["남성", "여성"];
 
-  void _onComplete() {
-    if (_controllers.values.any((controller) => controller.text.isEmpty) ||
-        _selectedGender == null) {
+  void _onComplete() async {
+    if (_controllers.values.any((controller) => controller.text.isEmpty) || _selectedGender == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("모든 정보를 입력해주세요.")),
       );
@@ -30,18 +32,40 @@ class _InputUserInfoScreenState extends State<InputUserInfoScreen> {
     }
 
     final userInfo = {
-      "이름": _controllers["이름"]!.text,
-      "키": _controllers["키 (cm)"]!.text,
-      "체중": _controllers["체중 (kg)"]!.text,
-      "생년월일": _controllers["생년월일"]!.text,
-      "성별": _selectedGender,
+      "name": _controllers["이름"]!.text.trim(),
+      "height_cm": _controllers["키 (cm)"]!.text.trim(),
+      "weight_kg": _controllers["체중 (kg)"]!.text.trim(),
+      "birth_date": _controllers["생년월일"]!.text.trim(),
+      "gender": _selectedGender,
     };
 
-    print("사용자 정보: $userInfo");
+    print("사용자 정보 JSON: $userInfo");
 
-    FitbitAuthService.setUserInfoEntered();
+    try {
+      final response = await http.post(
+        Uri.parse(dotenv.env['AUTH_API_GATEWAY_URL']!), 
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(userInfo),
+      );
 
-    context.go('/main');
+      final decodedBody = utf8.decode(response.bodyBytes);
+      if (response.statusCode == 200) {
+        print("사용자 정보 전송 성공: $decodedBody");
+
+        await FitbitAuthService.setUserInfoEntered();
+        context.go('/main');
+      } else {
+        print("전송 실패: ${response.statusCode} - $decodedBody");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("서버 전송 실패: ${response.statusCode}")),
+        );
+      }
+    } catch (e) {
+      print("API 호출 에러: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("오류 발생: 서버와 통신 실패")),
+      );
+    }
   }
 
   @override
