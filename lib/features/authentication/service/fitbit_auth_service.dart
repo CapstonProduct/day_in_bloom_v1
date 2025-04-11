@@ -95,7 +95,6 @@ class FitbitAuthService {
         "access_token": accessToken,
         "refresh_token": refreshToken,
         "token_type": tokenType,
-        "expires_in": expiresIn,
       };
 
       final prettyJson = const JsonEncoder.withIndent('  ').convert(sendingJsonData);
