@@ -90,7 +90,6 @@ class FitbitAuthService {
       await _storage.write(key: 'auto_login', value: autoLogin.toString());
 
       final sendingJsonData = {
-        "userId": "my_user_123",
         "fitbit_user_id": fitbitUserId,
         "access_token": accessToken,
         "refresh_token": refreshToken,

@@ -32,9 +32,9 @@ class _InputUserInfoScreenState extends State<InputUserInfoScreen> {
     }
 
     final userInfo = {
-      "name": _controllers["이름"]!.text.trim(),
-      "height_cm": _controllers["키 (cm)"]!.text.trim(),
-      "weight_kg": _controllers["체중 (kg)"]!.text.trim(),
+      "username": _controllers["이름"]!.text.trim(),
+      "height": _controllers["키 (cm)"]!.text.trim(),
+      "weight": _controllers["체중 (kg)"]!.text.trim(),
       "birth_date": _controllers["생년월일"]!.text.trim(),
       "gender": _selectedGender,
     };
