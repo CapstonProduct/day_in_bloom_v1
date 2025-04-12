@@ -8,9 +8,9 @@ class ReportStressScoreScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final int totalScore = 64;
     final List<Map<String, String>> healthData = [
-      {'label': '아침(09:00)', 'value': '72'},
-      {'label': '점심(13:00)', 'value': '56'},
-      {'label': '저녁(18:00)', 'value': '66'},
+      {'label': '심박 변이도(HRV)', 'value': '20 ms'},
+      {'label': '안정시 심박수(RHR)', 'value': '70 bpm'},
+      {'label': '수면 점수', 'value': '78'},
     ];
 
     return Scaffold(

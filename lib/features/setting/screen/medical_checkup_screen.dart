@@ -8,18 +8,19 @@ class MedicalCheckupScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<Map<String, String>> checkupItems = [
       {'label': '이름', 'value': '최예름'},
-      {'label': '생년월일', 'value': '1900-00-00'},
-      {'label': '질환력 해당 여부', 'value': '협심증'},
-      {'label': '흡연 여부', 'value': '비흡연자'},
-      {'label': '질환', 'value': '당뇨병'},
-      {'label': '신장', 'value': '155 cm'},
-      {'label': '체중', 'value': '50 kg'},
-      {'label': '허리둘레', 'value': '80 cm'},
-      {'label': '체질량 지수', 'value': '25 kg/m²'},
-      {'label': '시력 (좌/우)', 'value': '-1.0 / -1.0'},
-      {'label': '청력 (좌/우)', 'value': '15 dB / 15 dB'},
-      {'label': '혈압 (최고/최저)', 'value': '102 / 79 mmHg'},
-      {'label': '요단백', 'value': '음성'},
+      {'label': '검진 날짜', 'value': '2025-03-15'},
+      {'label': '신장', 'value': '160.5 cm'},
+      {'label': '체중', 'value': '52.3 kg'},
+      {'label': '체질량 지수', 'value': '20.3 kg/m²'},
+      {'label': '혈압 (최고/최저)', 'value': '120 / 80 mmHg'},
+      {'label': '공복 혈당', 'value': '92.5 mg/dL'},
+      {'label': '총 콜레스테롤', 'value': '178.0 mg/dL'},
+      {'label': 'HDL 콜레스테롤', 'value': '60.2 mg/dL'},
+      {'label': 'LDL 콜레스테롤', 'value': '98.5 mg/dL'},
+      {'label': '중성지방', 'value': '110.7 mg/dL'},
+      {'label': '신사구체 여과율 (GFR)', 'value': '95.4 mL/min/1.73m²'},
+      {'label': 'AST (간 기능)', 'value': '22.0 U/L'},
+      {'label': 'ALT (간 기능)', 'value': '19.5 U/L'}
     ];
 
     return Scaffold(
