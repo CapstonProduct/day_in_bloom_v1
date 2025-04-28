@@ -1,10 +1,46 @@
 import 'package:day_in_bloom_v1/features/healthreport/screen/pdf_download_modal.dart';
 import 'package:day_in_bloom_v1/widgets/app_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:go_router/go_router.dart';
+import 'dart:convert';
 
-class ReportCategoryScreen extends StatelessWidget {
+class ReportCategoryScreen extends StatefulWidget {
   const ReportCategoryScreen({super.key});
+
+  @override
+  _ReportCategoryScreenState createState() => _ReportCategoryScreenState();
+}
+
+class _ReportCategoryScreenState extends State<ReportCategoryScreen> {
+  late Future<Map<String, dynamic>> _data;
+
+  @override
+  void initState() {
+    super.initState();
+    _data = fetchData();
+  }
+
+  Future<Map<String, dynamic>> fetchData() async {
+    final response = await http.get(Uri.parse('https://w3labpvlec.execute-api.ap-northeast-2.amazonaws.com/prod/report-category'));
+
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      print('Failed to load data: ${response.statusCode}');
+      print('Error body: ${response.body}');
+      throw Exception('Failed to load data');
+    }
+  }
+
+  Future<void> _refreshData() async {
+    setState(() {
+      _data = fetchData();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,39 +50,61 @@ class ReportCategoryScreen extends StatelessWidget {
       appBar: const CustomAppBar(title: '건강 리포트', showBackButton: true),
       body: Padding(
         padding: const EdgeInsets.all(35.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              selectedDate,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-            Expanded(
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 1,
-                ),
-                itemCount: _categories.length,
-                itemBuilder: (context, index) {
-                  if (index == 0 || index == 1) {
-                    return ScoreReportCategoryTile(
-                      category: _categories[index],
-                      isHighlighted: index == 0,
-                      color: index == 0 ? Colors.yellow.shade100 : Colors.grey.shade200,
-                    );
-                  }
-                  return ReportCategoryTile(category: _categories[index], isHighlighted: false);
-                },
+        child: RefreshIndicator(
+          onRefresh: _refreshData,
+          color: Colors.green,
+          backgroundColor: Colors.white,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                selectedDate,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
-            ),
-            const SizedBox(height: 16),
-            const DownloadReportButton(),
-            const SizedBox(height: 16),
-          ],
+              const SizedBox(height: 20),
+              Expanded(
+                child: FutureBuilder<Map<String, dynamic>>(
+                  future: _data, 
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator(color: Colors.green));
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else if (!snapshot.hasData) {
+                      return Center(child: Text('No data found.'));
+                    } else {
+                      final data = snapshot.data!;
+                      final overallHealthScore = data['overall_health_score'];
+                      final stressScore = data['stress_score'];
+
+                      return GridView.builder(
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                          childAspectRatio: 1,
+                        ),
+                        itemCount: _categories.length,
+                        itemBuilder: (context, index) {
+                          if (index == 0 || index == 1) {
+                            return ScoreReportCategoryTile(
+                              category: _categories[index].copyWith(score: index == 0 ? overallHealthScore : stressScore),
+                              isHighlighted: index == 0,
+                              color: index == 0 ? Colors.yellow.shade100 : Colors.grey.shade200,
+                            );
+                          }
+                          return ReportCategoryTile(category: _categories[index], isHighlighted: false);
+                        },
+                      );
+                    }
+                  },
+                ),
+              ),
+              const SizedBox(height: 16),
+              const DownloadReportButton(),
+              const SizedBox(height: 16),
+            ],
+          ),
         ),
       ),
     );
@@ -183,11 +241,21 @@ class ReportCategory {
     this.color,
     required this.route,
   });
+
+  ReportCategory copyWith({int? score}) {
+    return ReportCategory(
+      title: this.title,
+      imagePath: this.imagePath,
+      score: score ?? this.score,
+      color: this.color,
+      route: this.route,
+    );
+  }
 }
 
 const List<ReportCategory> _categories = [
-  ReportCategory(title: '전체 종합 점수', imagePath: '', score: 88, route: '/homeCalendar/report/totalScore'),
-  ReportCategory(title: '스트레스 점수', imagePath: '', score: 52, color: Colors.red, route: '/homeCalendar/report/stressScore'),
+  ReportCategory(title: '전체 종합 점수', imagePath: '', score: 0, route: '/homeCalendar/report/totalScore'),
+  ReportCategory(title: '스트레스 점수', imagePath: '', score: 0, color: Colors.red, route: '/homeCalendar/report/stressScore'),
   ReportCategory(title: '운동', imagePath: 'assets/report_icon/dumbell.png', route: '/homeCalendar/report/exercise'),
   ReportCategory(title: '수면', imagePath: 'assets/report_icon/pillow.png', route: '/homeCalendar/report/sleep'),
   ReportCategory(title: '보호자님\n조언', imagePath: 'assets/report_icon/family_talk.png', route: '/homeCalendar/report/familyAdvice'),

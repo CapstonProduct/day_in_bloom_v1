@@ -48,6 +48,7 @@ dependencies:
   flutter_secure_storage: ^9.2.4
   flutter_inappwebview: ^6.1.5
   flutter_dotenv: ^5.2.1
+  custom_refresh_indicator: ^4.0.1
 
 flutter_native_splash:
   android: true
