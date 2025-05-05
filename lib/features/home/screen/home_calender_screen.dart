@@ -29,13 +29,18 @@ class HomeCalendarScreen extends StatelessWidget {
                         ),
                         shadowColor: Colors.transparent,
                         elevation: 0,
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                       ),
-                      child: const Text(
-                        '날짜를 클릭하여 그날의 건강 리포트를 확인하세요!',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10), 
+                        child: Text(
+                          '날짜를 클릭하여 그날의 건강 리포트를 확인하세요!',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
@@ -57,7 +62,7 @@ class HomeCalendarScreen extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 5),
+                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 5),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   border: Border.all(color: Colors.teal),

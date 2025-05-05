@@ -18,7 +18,7 @@ Widget verticalImageTextButton({
           const SizedBox(height: 8),
           Text(
             buttonText, 
-            style: TextStyle(color: Colors.black),
+            style: TextStyle(color: Colors.black, fontSize: 10),
             textAlign: TextAlign.center,
           ),
         ],

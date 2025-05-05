@@ -80,7 +80,7 @@ class _QnaResultListScreenState extends State<QnaResultListScreen> {
                     children: [
                       Text(
                         _getFormattedWeekRange(_selectedWeek),
-                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black87),
+                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black87),
                       ),
                       const SizedBox(width: 8),
                       IconButton(

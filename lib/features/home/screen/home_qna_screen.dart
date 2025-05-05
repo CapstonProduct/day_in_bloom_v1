@@ -28,7 +28,7 @@ class HomeQnaScreen extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Image.asset('assets/qna_icon/health_qna.png', width: 150, height: 150),
+                  Image.asset('assets/qna_icon/health_qna.png', width: 120, height: 120),
                   const SizedBox(width: 10),
                   const Expanded(
                     child: Column(
@@ -37,14 +37,14 @@ class HomeQnaScreen extends StatelessWidget {
                         Text(
                           "오늘의\n건강 문답\n진행하기",
                           textAlign: TextAlign.right,
-                          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: Colors.black),
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
                         ),
                         SizedBox(height: 20),
                         Text(
                           "[ 주의사항 ]\n"
                           "오늘 이미 답변하시고\n다시 진행하신다면\n결과가 덮어쓰여집니다!",
                           textAlign: TextAlign.right,
-                          style: TextStyle(fontSize: 14, color: Colors.black54, fontWeight: FontWeight.bold),
+                          style: TextStyle(fontSize: 12, color: Colors.black54, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -67,13 +67,13 @@ class HomeQnaScreen extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Image.asset('assets/qna_icon/qna_report.png', width: 140, height: 140),
+                  Image.asset('assets/qna_icon/qna_report.png', width: 110, height: 110),
                   const SizedBox(width: 20),
                   const Expanded(
                     child: Text(
                       "지난\n건강 문답\n분석 결과\n확인",
                       textAlign: TextAlign.right,
-                      style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: Colors.black),
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
                     ),
                   ),
                 ],

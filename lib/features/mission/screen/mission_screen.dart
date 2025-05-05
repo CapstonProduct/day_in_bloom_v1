@@ -173,7 +173,7 @@ class MissionScreen extends StatelessWidget {
                       child: Text(
                         title,
                         style: const TextStyle(
-                          fontSize: 15,
+                          fontSize: 12,
                           fontWeight: FontWeight.w500,
                         ),
                       ),

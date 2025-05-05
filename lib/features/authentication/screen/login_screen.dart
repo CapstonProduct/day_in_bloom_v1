@@ -14,7 +14,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final PageController _pageController = PageController();
   final List<String> guideTexts = [
     "1. Fitbit 로그인 버튼을 누른 후\nGoogle 아이디로 로그인하세요.",
-    "2. Google 계정 정보를 입력하세요.",
+    "2. Google 계정 정보를\n입력하세요.",
     "3. 첫 로그인 이후에는\n저장된 Google 계정으로\n간편하게 로그인 할 수 있어요.",
   ];
 
@@ -73,7 +73,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 borderRadius: BorderRadius.circular(8.0),
                                 child: Image.asset(
                                   'assets/login_guide_img/guide${index + 1}.png',
-                                  width: MediaQuery.of(context).size.width * 0.8,
+                                  width: double.infinity,
+                                  height: 240,
                                   fit: BoxFit.contain,
                                 ),
                               ),

@@ -216,7 +216,7 @@ class DownloadReportButton extends StatelessWidget {
           children: [
             Text(
               '리포트 PDF 다운로드 (본인용)',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold, fontSize: 12),
             ),
             const SizedBox(width: 14),
             Image.asset('assets/report_icon/green_pdf.png', width: 40, height: 40),

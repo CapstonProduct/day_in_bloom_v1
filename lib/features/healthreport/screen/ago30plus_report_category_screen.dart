@@ -70,7 +70,7 @@ class Ago30plusReportCategoryScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'PDF 뷰어로 리포트 확인하기',
+                      'PDF 뷰어로\n리포트 확인하기',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(width: 12),
@@ -184,7 +184,7 @@ class DownloadReportButton extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              '리포트 PDF 다운로드 (본인용)',
+              '리포트 PDF\n다운로드 (본인용)',
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(width: 14),

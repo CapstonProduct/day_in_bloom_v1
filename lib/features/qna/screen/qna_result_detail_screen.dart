@@ -9,10 +9,10 @@ class QnaResultDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final DateTime selectedDate = GoRouterState.of(context).extra as DateTime? ?? DateTime.now();
-    final String formattedDate = DateFormat('yyyy / MM / dd').format(selectedDate);
+    final String formattedDate = DateFormat('yyyy/MM/dd').format(selectedDate);
 
     return Scaffold(
-      appBar: CustomAppBar(title: "$formattedDate 분석 결과"),
+      appBar: CustomAppBar(title: "$formattedDate 분석결과"),
       body: Padding(
         padding: const EdgeInsets.all(30.0),
         child: SingleChildScrollView(

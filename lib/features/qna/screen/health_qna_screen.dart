@@ -61,7 +61,7 @@ class _HealthQnaScreenState extends State<HealthQnaScreen> {
           child: Text(
             "18개 중 ${_currentQuestionIndex + 1}번째 질문",
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
@@ -83,7 +83,7 @@ class _HealthQnaScreenState extends State<HealthQnaScreen> {
                 child: Text(
                   question['question'],
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 15,
                     fontWeight: FontWeight.bold,
                   ),
                   textAlign: TextAlign.center,
@@ -206,7 +206,7 @@ class _HealthQnaScreenState extends State<HealthQnaScreen> {
             children: [
               CircularProgressIndicator(),
               SizedBox(width: 20),
-              Text("AI 건강비서가 분석을 진행중입니다.\n잠시만 기다려주세요 🤗"),
+              Text("AI 건강비서가\n분석을 진행중입니다.\n잠시만 기다려주세요 🤗"),
             ],
           ),
         );

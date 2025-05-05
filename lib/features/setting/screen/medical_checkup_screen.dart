@@ -38,11 +38,11 @@ class MedicalCheckupScreen extends StatelessWidget {
                 children: [
                   Text(
                     '• ${checkupItems[index]['label']!}',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black54),
+                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.black54),
                   ),
                   Text(
                     checkupItems[index]['value']!,
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
                   ),
                 ],
               ),
