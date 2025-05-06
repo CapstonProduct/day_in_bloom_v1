@@ -1,44 +1,67 @@
-import 'package:day_in_bloom_v1/features/healthreport/screen/pdf_download_modal.dart';
-import 'package:day_in_bloom_v1/widgets/app_bar.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:go_router/go_router.dart';
-import 'dart:convert';
+import 'package:intl/intl.dart';
+import 'package:day_in_bloom_v1/features/authentication/service/fitbit_auth_service.dart';
+import 'package:day_in_bloom_v1/features/healthreport/screen/pdf_download_modal.dart';
+import 'package:day_in_bloom_v1/widgets/app_bar.dart';
 
 class ReportCategoryScreen extends StatefulWidget {
   const ReportCategoryScreen({super.key});
 
   @override
-  _ReportCategoryScreenState createState() => _ReportCategoryScreenState();
+  State<ReportCategoryScreen> createState() => _ReportCategoryScreenState();
 }
 
 class _ReportCategoryScreenState extends State<ReportCategoryScreen> {
-  late Future<Map<String, dynamic>> _data;
+  late Future<Map<String, dynamic>> _reportData;
 
   @override
   void initState() {
     super.initState();
-    _data = fetchData();
+    _reportData = fetchReportData();
   }
 
-  Future<Map<String, dynamic>> fetchData() async {
-    final response = await http.get(Uri.parse('https://w3labpvlec.execute-api.ap-northeast-2.amazonaws.com/prod/report-category'));
+  Future<Map<String, dynamic>> fetchReportData() async {
+    final encodedId = await FitbitAuthService.getUserId();
+    final reportDateRaw = GoRouterState.of(context).uri.queryParameters['date'];
 
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
+    if (encodedId == null || reportDateRaw == null) {
+      throw Exception('사용자 정보 또는 날짜가 없습니다.');
+    }
 
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
-      print('Failed to load data: ${response.statusCode}');
-      print('Error body: ${response.body}');
-      throw Exception('Failed to load data');
+    final formattedDate = _parseReportDate(reportDateRaw);
+
+    final response = await http.post(
+      Uri.parse('https://w3labpvlec.execute-api.ap-northeast-2.amazonaws.com/prod/report-category'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'encodedId': encodedId,
+        'report_date': formattedDate,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('데이터 로드 실패: ${response.body}');
+    }
+
+    return json.decode(response.body);
+  }
+
+  String _parseReportDate(String rawDate) {
+    try {
+      final sanitized = rawDate.replaceAll('/', '-').replaceAll(' ', '');
+      final parsedDate = DateTime.parse(sanitized);
+      return DateFormat('yyyy-MM-dd').format(parsedDate);
+    } catch (_) {
+      throw Exception('날짜 파싱 실패: $rawDate');
     }
   }
 
   Future<void> _refreshData() async {
     setState(() {
-      _data = fetchData();
+      _reportData = fetchReportData();
     });
   }
 
@@ -64,39 +87,41 @@ class _ReportCategoryScreenState extends State<ReportCategoryScreen> {
               const SizedBox(height: 20),
               Expanded(
                 child: FutureBuilder<Map<String, dynamic>>(
-                  future: _data, 
+                  future: _reportData,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator(color: Colors.green));
+                      return const Center(child: CircularProgressIndicator(color: Colors.green));
                     } else if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));
                     } else if (!snapshot.hasData) {
-                      return Center(child: Text('No data found.'));
-                    } else {
-                      final data = snapshot.data!;
-                      final overallHealthScore = data['overall_health_score'];
-                      final stressScore = data['stress_score'];
-
-                      return GridView.builder(
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
-                          childAspectRatio: 1,
-                        ),
-                        itemCount: _categories.length,
-                        itemBuilder: (context, index) {
-                          if (index == 0 || index == 1) {
-                            return ScoreReportCategoryTile(
-                              category: _categories[index].copyWith(score: index == 0 ? overallHealthScore : stressScore),
-                              isHighlighted: index == 0,
-                              color: index == 0 ? Colors.yellow.shade100 : Colors.grey.shade200,
-                            );
-                          }
-                          return ReportCategoryTile(category: _categories[index], isHighlighted: false);
-                        },
-                      );
+                      return const Center(child: Text('No data found.'));
                     }
+
+                    final data = snapshot.data!;
+                    final overallHealthScore = data['overall_health_score'] ?? 0;
+                    final stressScore = data['stress_score'] ?? 0;
+
+                    return GridView.builder(
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                        childAspectRatio: 1,
+                      ),
+                      itemCount: _categories.length,
+                      itemBuilder: (context, index) {
+                        final category = _categories[index];
+                        if (index == 0 || index == 1) {
+                          return ScoreReportCategoryTile(
+                            category: category.copyWith(
+                              score: index == 0 ? overallHealthScore : stressScore,
+                            ),
+                            color: index == 0 ? Colors.yellow.shade100 : Colors.grey.shade200,
+                          );
+                        }
+                        return ReportCategoryTile(category: category);
+                      },
+                    );
                   },
                 ),
               ),
@@ -113,21 +138,19 @@ class _ReportCategoryScreenState extends State<ReportCategoryScreen> {
 
 class ReportCategoryTile extends StatelessWidget {
   final ReportCategory category;
-  final bool isHighlighted;
 
-  const ReportCategoryTile({super.key, required this.category, required this.isHighlighted});
+  const ReportCategoryTile({super.key, required this.category});
 
   @override
   Widget build(BuildContext context) {
+    final selectedDate = GoRouterState.of(context).uri.queryParameters['date'] ?? '';
+
     return GestureDetector(
-      onTap: () {
-        final selectedDate = GoRouterState.of(context).uri.queryParameters['date'] ?? '';
-        context.go('${category.route}?date=$selectedDate'); 
-      },
+      onTap: () => context.go('${category.route}?date=$selectedDate'),
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: isHighlighted ? Colors.yellow.shade100 : Colors.grey.shade200,
+          color: Colors.grey.shade200,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Stack(
@@ -152,18 +175,20 @@ class ReportCategoryTile extends StatelessWidget {
 
 class ScoreReportCategoryTile extends StatelessWidget {
   final ReportCategory category;
-  final bool isHighlighted;
   final Color color;
 
-  const ScoreReportCategoryTile({super.key, required this.category, required this.isHighlighted, required this.color});
+  const ScoreReportCategoryTile({
+    super.key,
+    required this.category,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final selectedDate = GoRouterState.of(context).uri.queryParameters['date'] ?? '';
+
     return GestureDetector(
-      onTap: () {
-        final selectedDate = GoRouterState.of(context).uri.queryParameters['date'] ?? '';
-        context.go('${category.route}?date=$selectedDate'); 
-      },
+      onTap: () => context.go('${category.route}?date=$selectedDate'),
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
@@ -184,9 +209,9 @@ class ScoreReportCategoryTile extends StatelessWidget {
               child: Text(
                 category.score.toString(),
                 style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: category.color ?? Colors.black,
-                ),
+                      fontWeight: FontWeight.bold,
+                      color: category.color ?? Colors.black,
+                    ),
               ),
             ),
           ],
@@ -202,9 +227,7 @@ class DownloadReportButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        PdfDownloadModal.show(context);
-      },
+      onTap: () => PdfDownloadModal.show(context),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         decoration: BoxDecoration(
@@ -244,11 +267,11 @@ class ReportCategory {
 
   ReportCategory copyWith({int? score}) {
     return ReportCategory(
-      title: this.title,
-      imagePath: this.imagePath,
+      title: title,
+      imagePath: imagePath,
       score: score ?? this.score,
-      color: this.color,
-      route: this.route,
+      color: color,
+      route: route,
     );
   }
 }

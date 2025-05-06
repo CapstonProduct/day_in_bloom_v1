@@ -1,63 +1,138 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+import 'package:day_in_bloom_v1/features/authentication/service/fitbit_auth_service.dart';
 import 'package:day_in_bloom_v1/widgets/app_bar.dart';
 
-class ExerciseRecommendationScreen extends StatelessWidget {
+class ExerciseRecommendationScreen extends StatefulWidget {
   const ExerciseRecommendationScreen({super.key});
 
-  final String username = "최예름";
+  @override
+  State<ExerciseRecommendationScreen> createState() =>
+      _ExerciseRecommendationScreenState();
+}
 
-  final String monthlyExerciseAnalysis = 
-    "한 달 평균 걸음 수는 5802보, 활동 시간은 73분이었습니다. "
-    "주당 운동은 평균 2.2회로, 규칙적인 운동 유지가 필요합니다.";
+class _ExerciseRecommendationScreenState
+    extends State<ExerciseRecommendationScreen> {
+  late Future<Map<String, String>> _exerciseData;
+  late final String _selectedDate;
 
-  final String yesterdayExerciseAnalysis = 
-    "어제는 2225보를 걷고 79분 활동했으며, 운동 세션은 3회였습니다. "
-    "평균 심박수는 80bpm으로, 활동량이 최근보다 많았습니다.";
+  static const _defaultMessage = "데이터를 로딩할 수 없습니다. 네트워크 연결을 확인하세요.";
+  static const _apiUrl =
+      "https://l7p03a7vy0.execute-api.ap-northeast-2.amazonaws.com/dev/exercise-recommendation";
 
-  final String exerciseTips = 
-      "활동량을 증가시키기 위해 하루 최소 6000보 이상 걷기를 목표로 설정하는 것이 좋습니다. "
-      "좌식 시간이 870분으로 나타났으므로, 중간중간 가벼운 스트레칭이나 짧은 산책을 추가하는 것이 필요합니다. "
-      "심박수(80bpm)가 안정적인 범위 내에 있도록 가벼운 유산소 운동을 포함하는 것이 좋습니다. "
-      "운동 세션(3회)이 적었다면, 가벼운 근력 운동이나 균형 감각을 기르는 활동을 추가해보세요. "
-      "무리한 운동보다는 지속 가능한 운동 루틴을 설정하고, 주당 3~5회 적절한 운동을 유지하는 것이 중요합니다.";
+  static const Map<String, String> _defaultExerciseData = {
+    "monthly": _defaultMessage,
+    "yesterday": _defaultMessage,
+    "recommendation": _defaultMessage,
+  };
 
+  @override
+  void initState() {
+    super.initState();
+    _selectedDate = _getTodayDateFormatted();
+    _exerciseData = _loadExerciseData();
+  }
+
+  String _getTodayDateFormatted() {
+    final today = DateTime.now();
+    return "${today.year.toString().padLeft(4, '0')}-"
+        "${today.month.toString().padLeft(2, '0')}-"
+        "${today.day.toString().padLeft(2, '0')}";
+  }
+
+  Future<Map<String, String>> _loadExerciseData() async {
+    try {
+      final encodedId = await FitbitAuthService.getUserId();
+      if (encodedId == null) throw Exception("User ID is null");
+      return await _fetchExerciseData(encodedId);
+    } catch (e) {
+      debugPrint('Error fetching exercise data: $e');
+      return _defaultExerciseData;
+    }
+  }
+
+  Future<Map<String, String>> _fetchExerciseData(String encodedId) async {
+    try {
+      final response = await http.post(
+        Uri.parse(_apiUrl),
+        headers: {"Content-Type": "application/json"},
+        body: json.encode({
+          "encodedId": encodedId,
+          "date": _selectedDate,
+        }),
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception("Failed to load data. Status: ${response.statusCode}");
+      }
+
+      final jsonData = json.decode(response.body);
+      return {
+        "monthly": jsonData['exercise_month_analysis'] ?? _defaultMessage,
+        "yesterday": jsonData['exercise_yesterday_analysis'] ?? _defaultMessage,
+        "recommendation": jsonData['exercise_recommendation'] ?? _defaultMessage,
+      };
+    } catch (e) {
+      debugPrint('API error: $e');
+      return _defaultExerciseData;
+    }
+  }
+
+  Future<void> _refreshData() async {
+    setState(() {
+      _exerciseData = _loadExerciseData();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: "$username 님 맞춤 운동 추천"),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(28.0),
-          child: Column(
-            children: [
-              _buildBox("✅ 한달 간 운동 분석", monthlyExerciseAnalysis),
-              SizedBox(height: 20),
-              _buildBox("✅ 어제의 운동 분석", yesterdayExerciseAnalysis),
-              SizedBox(height: 20),
-              _buildBox("✅ 추천하는 운동 / 주의사항", exerciseTips),
-            ],
-          ),
+      appBar: const CustomAppBar(title: "맞춤 운동 추천"),
+      body: RefreshIndicator(
+        onRefresh: _refreshData,
+        child: FutureBuilder<Map<String, String>>(
+          future: _exerciseData,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            final data = snapshot.data ?? _defaultExerciseData;
+
+            return SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(28.0),
+              child: Column(
+                children: [
+                  _buildExerciseBox("✅ 한달 간 운동 분석", data["monthly"]!),
+                  const SizedBox(height: 20),
+                  _buildExerciseBox("✅ 어제의 운동 분석", data["yesterday"]!),
+                  const SizedBox(height: 20),
+                  _buildExerciseBox("✅ 추천하는 운동 / 주의사항", data["recommendation"]!),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );
   }
 
-  Widget _buildBox(String title, String description) {
+  Widget _buildExerciseBox(String title, String description) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
+          style:
+              const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Container(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
@@ -65,10 +140,7 @@ class ExerciseRecommendationScreen extends StatelessWidget {
           ),
           child: Text(
             description,
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.black54,
-            ),
+            style: const TextStyle(fontSize: 16, color: Colors.black54),
           ),
         ),
       ],

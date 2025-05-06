@@ -93,45 +93,45 @@ class ReportSleepScreen extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 20),
+                    // const SizedBox(height: 20),
 
-                    Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Color.fromARGB(255, 235, 241, 203),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "수면 장애 예측 및 대응방안",
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
-                          ),
-                          const SizedBox(height: 16),
+                    // Container(
+                    //   width: double.infinity,
+                    //   decoration: BoxDecoration(
+                    //     color: Color.fromARGB(255, 235, 241, 203),
+                    //     borderRadius: BorderRadius.circular(12),
+                    //   ),
+                    //   padding: const EdgeInsets.all(16),
+                    //   child: Column(
+                    //     crossAxisAlignment: CrossAxisAlignment.start,
+                    //     children: [
+                    //       const Text(
+                    //         "수면 장애 예측 및 대응방안",
+                    //         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+                    //       ),
+                    //       const SizedBox(height: 16),
 
-                          buildPredictionItem(
-                            title: "1. 불면증 가능성",
-                            analysisText: "● 환자 범주: ~ ~\n● 사용자 점수: ○○○\n➜ 불면증 가능성이 높습니다",
-                          ),
+                    //       buildPredictionItem(
+                    //         title: "1. 불면증 가능성",
+                    //         analysisText: "● 환자 범주: ~ ~\n● 사용자 점수: ○○○\n➜ 불면증 가능성이 높습니다",
+                    //       ),
 
-                          const SizedBox(height: 20),
+                    //       const SizedBox(height: 20),
 
-                          buildPredictionItem(
-                            title: "2. 수면 무호흡증 가능성",
-                            analysisText: "● 환자 범주: ~ ~\n● 사용자 점수: ○○○\n➜ 수면 무호흡증 가능성이 낮습니다",
-                          ),
+                    //       buildPredictionItem(
+                    //         title: "2. 수면 무호흡증 가능성",
+                    //         analysisText: "● 환자 범주: ~ ~\n● 사용자 점수: ○○○\n➜ 수면 무호흡증 가능성이 낮습니다",
+                    //       ),
 
-                          const SizedBox(height: 20),
+                    //       const SizedBox(height: 20),
 
-                          buildPredictionItem(
-                            title: "3. 주간 졸림증(EDS) 가능성",
-                            analysisText: "● 환자 범주: ~ ~\n● 사용자 점수: ○○○\n➜ 주간 졸림증 가능성이 낮습니다",
-                          ),
-                        ],
-                      ),
-                    ),
+                    //       buildPredictionItem(
+                    //         title: "3. 주간 졸림증(EDS) 가능성",
+                    //         analysisText: "● 환자 범주: ~ ~\n● 사용자 점수: ○○○\n➜ 주간 졸림증 가능성이 낮습니다",
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
 
                     const SizedBox(height: 20),
                   ],
