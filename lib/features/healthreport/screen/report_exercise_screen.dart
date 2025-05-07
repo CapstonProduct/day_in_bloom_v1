@@ -1,102 +1,184 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:day_in_bloom_v1/widgets/app_bar.dart';
+import 'package:http/http.dart' as http;
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
+import 'package:day_in_bloom_v1/widgets/app_bar.dart';
+import 'package:day_in_bloom_v1/features/authentication/service/fitbit_auth_service.dart';
 
-class ReportExerciseScreen extends StatelessWidget {
+class ReportExerciseScreen extends StatefulWidget {
   const ReportExerciseScreen({super.key});
+
+  @override
+  State<ReportExerciseScreen> createState() => _ReportExerciseScreenState();
+}
+
+class _ReportExerciseScreenState extends State<ReportExerciseScreen> {
+  late Future<Map<String, dynamic>> _reportData;
+
+  @override
+  void initState() {
+    super.initState();
+    _reportData = fetchReportData();
+  }
+
+  Future<void> _refreshData() async {
+    setState(() {
+      _reportData = fetchReportData();
+    });
+  }
+
+  Future<Map<String, dynamic>> fetchReportData() async {
+    final encodedId = await FitbitAuthService.getUserId();
+    final reportDateRaw = GoRouterState.of(context).uri.queryParameters['date'];
+
+    if (encodedId == null || reportDateRaw == null) {
+      throw Exception('사용자 정보 또는 날짜가 없습니다.');
+    }
+
+    final formattedDate = _parseReportDate(reportDateRaw);
+
+    final response = await http.post(
+      Uri.parse('https://w3labpvlec.execute-api.ap-northeast-2.amazonaws.com/prod/report-category'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'encodedId': encodedId,
+        'report_date': formattedDate,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('데이터 로드 실패: ${response.body}');
+    }
+
+    return json.decode(response.body);
+  }
+
+  String _parseReportDate(String rawDate) {
+    try {
+      final sanitized = rawDate.replaceAll('/', '-').replaceAll(' ', '');
+      final parsedDate = DateTime.parse(sanitized);
+      return DateFormat('yyyy-MM-dd').format(parsedDate);
+    } catch (_) {
+      throw Exception('날짜 파싱 실패: $rawDate');
+    }
+  }
+
+  String formatNumber(dynamic value, String unit) {
+    if (value is num) {
+      return (value % 1 == 0)
+          ? '${value.toInt()} $unit'
+          : '${value.toStringAsFixed(1)} $unit';
+    }
+    return '$value';
+  }
 
   @override
   Widget build(BuildContext context) {
     final selectedDate = GoRouterState.of(context).uri.queryParameters['date'] ?? '날짜 없음';
-    const Color primaryColor = Color(0xFF41af7a); 
+    const Color primaryColor = Color(0xFF41af7a);
 
     return Scaffold(
       appBar: const CustomAppBar(title: "건강 리포트"),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: SizedBox(
-              width: 150,
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: primaryColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                ),
-                child: const Text(
-                  "운동 분석 결과",
-                  style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-          ),
+      body: RefreshIndicator(
+        onRefresh: _refreshData,
+        color: Colors.green,
+        backgroundColor: Colors.white,
+        child: FutureBuilder<Map<String, dynamic>>(
+          future: _reportData,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator(color: Colors.green));
+            } else if (snapshot.hasError) {
+              return Center(child: Text('에러 발생: ${snapshot.error}'));
+            } else if (!snapshot.hasData) {
+              return const Center(child: Text('데이터가 없습니다.'));
+            }
 
-          Expanded(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: primaryColor, width: 2),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.asset(
-                          'assets/remove_img/exercise_graph_ex.png',
-                          fit: BoxFit.cover,
+            final data = snapshot.data!;
+            final avgExerciseTime = formatNumber(data['avg_exercise_time'], '분');
+            final avgHeartRate = formatNumber(data['avg_heart_rate'], 'bpm');
+            final caloriesBurned = formatNumber(data['calories_burned'], '칼로리');
+            final String analysis = data['exercise_gpt_analysis'] ?? '분석 데이터가 없습니다.';
+
+            final String exerciseGraphPath = data['exercise_graph_path'] ?? '';
+
+            return SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  SizedBox(
+                    width: 150,
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: primaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                      ),
+                      child: const Text(
+                        "운동 분석 결과",
+                        style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
                       ),
                     ),
+                  ),
+                  const SizedBox(height: 16),
 
-                    const SizedBox(height: 20),
-
-                    buildRowItem("평균 운동 시간", "40 분"),
-                    buildRowItem("평균 심박수", "130 bpm"),
-                    buildRowItem("에너지 소모량", "264 칼로리"),
-
-                    const SizedBox(height: 20),
-
-                    Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE8F5E9),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            selectedDate,
-                            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black45),
-                          ),
-                          const SizedBox(height: 8),
-                          const Text(
-                            "어르신의 최근 Fitbit 운동 데이터를 분석한 결과, 평균 일일 걸음 수가 5,000보 이하로 나타났습니다. \n"
-                            "심박수 데이터에서는 안정 시 평균 80bpm으로, 약간 높은 경향이 있어 중강도 유산소 운동(예: 빠른 걷기, 실내 사이클)이 권장됩니다. \n"
-                            "또한, 활동 중 칼로리 소모량이 적어 근력 운동을 병행하면 대사 건강에 도움이 될 수 있습니다. \n"
-                            "꾸준한 운동 습관이 장기적인 건강 유지에 필수적이므로, 하루 30분 이상 지속적인 활동을 권장드립니다.",
-                            style: TextStyle(fontSize: 16, color: Colors.black87),
-                          ),
-                        ],
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: primaryColor, width: 2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.asset(
+                        'assets/remove_img/exercise_graph_ex.png',
+                        fit: BoxFit.cover,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  buildRowItem("평균 운동 시간", avgExerciseTime),
+                  buildRowItem("평균 심박수", avgHeartRate),
+                  buildRowItem("에너지 소모량", caloriesBurned),
+
+                  const SizedBox(height: 20),
+
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE8F5E9),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          selectedDate,
+                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black45),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          analysis,
+                          style: const TextStyle(fontSize: 16, color: Colors.black87),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ),
-        ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -115,13 +197,20 @@ class ReportExerciseScreen extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              title,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+            Flexible(
+              child: Text(
+                title,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-            Text(
-              value,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black54),
+            Flexible(
+              child: Text(
+                value,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black54),
+                textAlign: TextAlign.right,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ],
         ),
