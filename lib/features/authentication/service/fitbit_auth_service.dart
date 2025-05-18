@@ -26,7 +26,7 @@ class FitbitAuthService {
     final clientId = dotenv.env['FITBIT_CLIENT_ID']!;
     final clientSecret = dotenv.env['FITBIT_CLIENT_SECRET']!;
     const redirectUri = 'myapp://callback';
-    const scopes = 'activity heartrate sleep profile';
+    const scopes = 'activity heartrate location nutrition profile settings sleep social temperature weight respiratory_rate oxygen_saturation electrocardiogram mindfulness';
 
     final authUrl =
         'https://www.fitbit.com/oauth2/authorize'

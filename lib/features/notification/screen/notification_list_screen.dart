@@ -1,25 +1,57 @@
-import 'package:day_in_bloom_v1/widgets/app_bar.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:day_in_bloom_v1/widgets/app_bar.dart';
+import 'package:day_in_bloom_v1/features/authentication/service/fitbit_auth_service.dart';
 
-class NotificationListScreen extends StatelessWidget {
+class NotificationListScreen extends StatefulWidget {
   const NotificationListScreen({super.key});
 
-  static const List<Map<String, dynamic>> notifications = [
-    {'text': '1월 17일 건강 리포트가 생성되었습니다!', 'isRead': false, 'createdTime': '2025-01-17 08:00'},
-    {'text': '주무실 시간입니다. 오늘 하루 수고하셨습니다!', 'isRead': false, 'createdTime': '2025-01-17 22:00'},
-    {'text': '저녁 식사를 하실 시간입니다!', 'isRead': false, 'createdTime': '2025-01-17 18:30'},
-    {'text': '점심 식사를 하실 시간입니다!', 'isRead': false, 'createdTime': '2025-01-17 12:30'},
-    {'text': '아침 식사를 하실 시간입니다!', 'isRead': false, 'createdTime': '2025-01-17 07:30'},
-    {'text': '심박수에서 이상이 감지되었습니다.', 'isRead': false, 'createdTime': '2025-01-17 15:45'},
-    {'text': '일어서기 목표를 달성했습니다!', 'isRead': true, 'createdTime': '2025-01-16 14:00'},
-    {'text': '일어 설 시간입니다. 몸을 일분 동안 움직이세요!', 'isRead': true, 'createdTime': '2025-01-16 10:15'},
-    {'text': '심박수가 높습니다. 안정을 취하세요!', 'isRead': true, 'createdTime': '2025-01-16 09:30'},
-    {'text': '1월 16일 건강 리포트가 생성되었습니다!', 'isRead': true, 'createdTime': '2025-01-16 08:00'},
-    {'text': '주무실 시간입니다. 오늘 하루 수고하셨습니다!', 'isRead': true, 'createdTime': '2025-01-16 22:00'},
-    {'text': '저녁 식사를 하실 시간입니다!', 'isRead': true, 'createdTime': '2025-01-16 18:30'},
-    {'text': '점심 식사를 하실 시간입니다!', 'isRead': true, 'createdTime': '2025-01-16 12:30'},
-  ];
+  @override
+  State<NotificationListScreen> createState() => _NotificationListScreenState();
+}
+
+class _NotificationListScreenState extends State<NotificationListScreen> {
+  List<Map<String, dynamic>> _notifications = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchNotifications();
+  }
+
+  Future<void> _fetchNotifications() async {
+    final encodedId = await FitbitAuthService.getUserId();
+    if (encodedId == null) return;
+
+    final now = DateTime.now();
+    final today = DateFormat('yyyy-MM-dd').format(now);
+
+    final response = await http.post(
+      Uri.parse('https://d8ive2hn0h.execute-api.ap-northeast-2.amazonaws.com/dev/notification-list'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'encodedId': encodedId, 'date': today}),
+    );
+
+    if (response.statusCode == 200) {
+      final decoded = jsonDecode(response.body);
+      if (decoded is List) {
+        setState(() {
+          _notifications = decoded.cast<Map<String, dynamic>>();
+          _isLoading = false;
+        });
+      } else {
+        throw Exception('Invalid response format');
+      }
+    } else {
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('알림 불러오기 실패: ${response.body}')),
+      );
+    }
+  }
 
   String _formatTime(String dateTime) {
     final parsedTime = DateTime.parse(dateTime);
@@ -29,36 +61,45 @@ class NotificationListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: '알림 목록', showBackButton: true),
-      body: ListView.builder(
-        itemCount: notifications.length,
-        itemBuilder: (context, index) {
-          final notification = notifications[index];
-          return Container(
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-            decoration: BoxDecoration(
-              color: notification['isRead'] ? Colors.grey[200] : Colors.yellow[100],
-              border: const Border(
-                bottom: BorderSide(color: Colors.grey, width: 0.3),
+      appBar: const CustomAppBar(title: '알림 목록', showBackButton: true),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator(color: Colors.green))
+          : RefreshIndicator(
+              onRefresh: _fetchNotifications,
+              color: Colors.green,
+              child: ListView.builder(
+                itemCount: _notifications.length,
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  final notification = _notifications[index];
+                  final isRead = notification['is_read'] == true || notification['is_read'] == 1;
+
+                  return Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                    decoration: BoxDecoration(
+                      color: isRead ? Colors.grey[200] : Colors.yellow[100],
+                      border: const Border(
+                        bottom: BorderSide(color: Colors.grey, width: 0.3),
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          notification['message'],
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          _formatTime(notification['sent_at']),
+                          style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                        ),
+                      ],
+                    ),
+                  );
+                },
               ),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  notification['text'],
-                  style: const TextStyle(fontSize: 14),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  _formatTime(notification['createdTime']),
-                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
     );
   }
 }
