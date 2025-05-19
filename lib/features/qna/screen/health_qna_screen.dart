@@ -1,3 +1,4 @@
+import 'package:day_in_bloom_v1/features/authentication/service/fitbit_auth_service.dart';
 import 'package:day_in_bloom_v1/widgets/app_bar.dart';
 import 'package:day_in_bloom_v1/widgets/vertical_img_text_button.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +6,8 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class HealthQnaScreen extends StatefulWidget {
   const HealthQnaScreen({super.key});
@@ -19,8 +22,8 @@ class _HealthQnaScreenState extends State<HealthQnaScreen> {
   final Map<int, int> _selectedAnswers = {}; 
   final Map<int, String> _subjectiveAnswers = {};
 
-  // Real API Gateway URL
-  final String apiGatewayUrl = 'https://qw1j3nz7mg.execute-api.ap-northeast-2.amazonaws.com/default/gpt-api-lambda';
+  final String gptApiGatewayUrl = dotenv.env['GPT_API_GATEWAY_URL']!;
+  final String saveApiGatewayUrl = dotenv.env['SAVE_QNA_API_GATEWAY_URL']!;
 
   late BuildContext dialogContext;
 
@@ -159,24 +162,6 @@ class _HealthQnaScreenState extends State<HealthQnaScreen> {
             },
           ),
         ),
-
-        // if (_subjectiveAnswers.containsKey(_currentQuestionIndex))
-        //   Padding(
-        //     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-        //     child: Container(
-        //       padding: const EdgeInsets.all(8),
-        //       decoration: BoxDecoration(
-        //         color: Colors.yellow[200],
-        //         borderRadius: BorderRadius.circular(8),
-        //       ),
-        //       child: Text(
-        //         _subjectiveAnswers[_currentQuestionIndex] ?? '',
-        //         style: TextStyle(fontSize: 14, color: Colors.black),
-        //         maxLines: 2,
-        //         overflow: TextOverflow.ellipsis,
-        //       ),
-        //     ),
-        //   ),
       ],
     );
   }
@@ -224,7 +209,8 @@ class _HealthQnaScreenState extends State<HealthQnaScreen> {
         ..sort((e1, e2) => e1.key.compareTo(e2.key)),
     );
 
-    var choiceResult = [];
+    final multipleChoiceResponse = [];
+    final textResponse = [];
 
     if (_data != null) {
       for (var entry in sortedAnswers.entries) {
@@ -232,42 +218,61 @@ class _HealthQnaScreenState extends State<HealthQnaScreen> {
         var answerIndex = entry.value;
         var question = _data!['questions'][questionIndex];
         var answer = question['answers'][answerIndex];
-        choiceResult.add({
-          'question': question['question'],
-          'answer': answer['text'],
+        multipleChoiceResponse.add({
+          'question_id': question['id'],
+          'answer_id': answer['id'],
+          'text': answer['text'],
         });
       }
 
       _subjectiveAnswers.forEach((questionIndex, subjectiveAnswer) {
-        choiceResult.add({
-          'question': _data!['questions'][questionIndex]['question'],
-          'answer': subjectiveAnswer,
+        textResponse.add({
+          'question_id': _data!['questions'][questionIndex]['id'],
+          'text': subjectiveAnswer,
         });
       });
     }
 
-    debugPrint("선택된 답변 목록: $choiceResult");
+    final encodedId = await FitbitAuthService.getUserId();
+    final now = DateTime.now();
+    final formattedDate = DateFormat('yyyy-MM-dd').format(now);
 
     _showLoadingDialog();
 
-    var response = await http.post(
-      Uri.parse(apiGatewayUrl),
+    final gptResponse = await http.post(
+      Uri.parse(gptApiGatewayUrl),
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
-        'choice_result': choiceResult,
+        'choice_result': multipleChoiceResponse + textResponse,
       }),
     );
 
-    _hideLoadingDialog();
+    if (gptResponse.statusCode == 200) {
+      final gptResult = json.decode(gptResponse.body)['analysis'];
 
-    if (response.statusCode == 200) {
-      print('Response from Lambda: ${response.body}');
-      if (mounted) {
-        _showResponseDialog(response.body);
-      }
+      final Map<String, dynamic> saveRequestBody = {
+        'encodedId': encodedId,
+        'date': formattedDate,
+        'question': _data!['questions'],
+        'multiple_choice_response': multipleChoiceResponse,
+        'text_response': textResponse,
+        'gpt_qna_analysis': gptResult,
+      };
+
+      print('[DB 저장 요청 JSON]');
+      print(const JsonEncoder.withIndent('  ').convert(saveRequestBody));
+
+      final saveResponse = await http.post(
+        Uri.parse(saveApiGatewayUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(saveRequestBody),
+      );
+
+      _hideLoadingDialog();
+      if (mounted) _showResponseDialog(json.encode({'analysis': gptResult}));
     } else {
-      print('Failed to send data to Lambda. Status code: ${response.statusCode}');
-      print('Response body: ${response.body}');
+      _hideLoadingDialog();
+      print('GPT 호출 실패: ${gptResponse.body}');
     }
   }
 
