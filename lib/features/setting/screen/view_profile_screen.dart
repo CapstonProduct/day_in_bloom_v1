@@ -151,19 +151,6 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
             _buildInfoItem('저녁시간', data['dinner_time'] ?? '-'),
           ]),
         ),
-        const SizedBox(width: 12),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFcfe3d7),
-            foregroundColor: Colors.black,
-            padding: const EdgeInsets.symmetric(vertical: 44, horizontal: 12),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-          ),
-          onPressed: () {
-            context.go('/homeSetting/viewProfile/medCheckup');
-          },
-          child: const Text('건강검진 내역\n원클릭으로\n가져오기', textAlign: TextAlign.center),
-        ),
       ],
     );
   }

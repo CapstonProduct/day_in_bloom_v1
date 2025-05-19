@@ -18,7 +18,6 @@ import 'package:day_in_bloom_v1/features/qna/screen/qna_result_list_screen.dart'
 import 'package:day_in_bloom_v1/features/recommendation/screen/exercise_recommendation.dart';
 import 'package:day_in_bloom_v1/features/recommendation/screen/sleep_recommendation.dart';
 import 'package:day_in_bloom_v1/features/setting/screen/logout_cancel_screen.dart';
-import 'package:day_in_bloom_v1/features/setting/screen/medical_checkup_screen.dart';
 import 'package:day_in_bloom_v1/features/setting/screen/modify_profile_screen.dart';
 import 'package:day_in_bloom_v1/features/setting/screen/permission_screen.dart';
 import 'package:day_in_bloom_v1/features/setting/screen/view_profile_screen.dart';
@@ -156,10 +155,6 @@ GoRouter appRouter(String initialLocation) => GoRouter(
                 GoRoute(
                   path: 'modifyProfile',
                   pageBuilder: (context, state) => NoTransitionPage(child: ModifyProfileScreen()),
-                ),
-                GoRoute(
-                  path: 'medCheckup',
-                  pageBuilder: (context, state) => NoTransitionPage(child: MedicalCheckupScreen()),
                 ),
               ]
             ),
