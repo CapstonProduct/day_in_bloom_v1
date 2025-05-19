@@ -1,13 +1,20 @@
+import 'dart:convert';
+import 'package:day_in_bloom_v1/features/authentication/service/fitbit_auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:go_router/go_router.dart';
+import 'package:http/http.dart' as http;
 
 class AccountWithdrawModal extends StatelessWidget {
-  const AccountWithdrawModal({super.key});
+  final BuildContext parentContext;
 
-  static void show(BuildContext context) {
+  const AccountWithdrawModal({super.key, required this.parentContext});
+
+  static void show(BuildContext parentContext) {
     showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return const AccountWithdrawModal();
+      context: parentContext,
+      builder: (BuildContext dialogContext) {
+        return AccountWithdrawModal(parentContext: parentContext);
       },
     );
   }
@@ -37,8 +44,8 @@ class AccountWithdrawModal extends StatelessWidget {
           ),
           SizedBox(height: 12),
           Text(
-            '정말 탈퇴하시겠습니까? 😢', 
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.red), 
+            '정말 탈퇴하시겠습니까? 😢',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.red),
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 8),
@@ -50,13 +57,12 @@ class AccountWithdrawModal extends StatelessWidget {
       ),
       actions: [
         TextButton(
-          onPressed: () {
-            // 회원 탈퇴 로직 추가 & 초기 로그인 화면으로 이동 추가
-            Navigator.of(context).pop();
-            // context.go('/homeSetting/logoutAndCancel');
+          onPressed: () async {
+            Navigator.of(context).pop(); 
+            await deleteUserAndLogout(); 
           },
           child: const Text('예', style: TextStyle(color: Colors.blue)),
-        ),        
+        ),
         TextButton(
           onPressed: () {
             Navigator.of(context).pop();
@@ -65,5 +71,33 @@ class AccountWithdrawModal extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  Future<void> deleteUserAndLogout() async {
+    try {
+      final encodedId = await FitbitAuthService.getUserId();
+
+      final response = await http.post(
+        Uri.parse(dotenv.env['DELETE_USER_API_GATEWAY_URL']!),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({"encodedId": encodedId}),
+      );
+
+      if (response.statusCode == 200) {
+        await FitbitAuthService.logout();
+        if (parentContext.mounted) {
+          parentContext.go('/login');
+        }
+      } else {
+        final error = jsonDecode(response.body);
+        ScaffoldMessenger.of(parentContext).showSnackBar(
+          SnackBar(content: Text("탈퇴 실패: ${error['message'] ?? response.statusCode}")),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(parentContext).showSnackBar(
+        SnackBar(content: Text("에러 발생: $e")),
+      );
+    }
   }
 }

@@ -31,37 +31,35 @@ class _InputUserInfoScreenState extends State<InputUserInfoScreen> {
       return;
     }
 
+    final encodedId = await FitbitAuthService.getUserId();
+
     final userInfo = {
       "username": _controllers["이름"]!.text.trim(),
       "height": _controllers["키 (cm)"]!.text.trim(),
       "weight": _controllers["체중 (kg)"]!.text.trim(),
       "birth_date": _controllers["생년월일"]!.text.trim(),
       "gender": _selectedGender,
+      "encodedId": encodedId,
+      "role": "senior",
+      "login_provider": "fitbit",
     };
-
-    print("사용자 정보 JSON: $userInfo");
-
+    
     try {
+      final response = await http.post(
+        Uri.parse(dotenv.env['USER_INFO_API_GATEWAY_URL']!), 
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(userInfo),
+      );
+
+      final decodedBody = utf8.decode(response.bodyBytes);
+      if (response.statusCode == 200) {
         await FitbitAuthService.setUserInfoEntered();
         context.go('/main');
-      // final response = await http.post(
-      //   Uri.parse(dotenv.env['AUTH_API_GATEWAY_URL']!), 
-      //   headers: {'Content-Type': 'application/json'},
-      //   body: jsonEncode(userInfo),
-      // );
-
-      // final decodedBody = utf8.decode(response.bodyBytes);
-      // if (response.statusCode == 200) {
-      //   print("사용자 정보 전송 성공: $decodedBody");
-
-      //   await FitbitAuthService.setUserInfoEntered();
-      //   context.go('/main');
-      // } else {
-      //   print("전송 실패: ${response.statusCode} - $decodedBody");
-      //   ScaffoldMessenger.of(context).showSnackBar(
-      //     SnackBar(content: Text("서버 전송 실패: ${response.statusCode}")),
-      //   );
-      // }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("서버 전송 실패: ${response.statusCode}")),
+        );
+      }
     } catch (e) {
       print("API 호출 에러: $e");
       ScaffoldMessenger.of(context).showSnackBar(
@@ -81,7 +79,7 @@ class _InputUserInfoScreenState extends State<InputUserInfoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true, // 기본값이긴 하나 명시적으로 설정해줌
+      resizeToAvoidBottomInset: true, 
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
