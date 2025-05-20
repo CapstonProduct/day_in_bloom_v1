@@ -80,11 +80,17 @@ Future<void> main() async {
 }
 
 Future<void> sendTokenToLambda(String fcmToken) async {
-  final url = Uri.parse('https://jxy6l8mwbh.execute-api.ap-northeast-2.amazonaws.com/dev/save-fcm-device-token');
-  
+  final encodedId = await FitbitAuthService.getUserId();
+  if (encodedId == null) {
+    print('encodedId가 없습니다.');
+    return;
+  }
+
+  final url = Uri.parse('https://qod167lvkc.execute-api.ap-northeast-2.amazonaws.com/default/save-fcm-device-token');
+
   final Map<String, dynamic> data = {
+    'encodedId': encodedId,
     'fcmToken': fcmToken,
-    'userId': 1,
     'platform': 'android',
   };
 
@@ -99,7 +105,7 @@ Future<void> sendTokenToLambda(String fcmToken) async {
   if (response.statusCode == 200) {
     print('Token successfully sent to Lambda');
   } else {
-    print('Failed to send token to Lambda: ${response.statusCode}');
+    print('Failed to send token to Lambda: ${response.statusCode} ${response.body}');
   }
 }
 
