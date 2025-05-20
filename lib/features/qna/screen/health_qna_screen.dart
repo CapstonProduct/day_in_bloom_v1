@@ -324,7 +324,7 @@ class _HealthQnaScreenState extends State<HealthQnaScreen> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                context.go('/homeCalendar');
+                context.go('/main');
               },
               child: Text(
                 '메인으로 돌아가기',
