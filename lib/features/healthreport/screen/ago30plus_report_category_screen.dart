@@ -173,7 +173,8 @@ class DownloadReportButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        PdfDownloadModal.show(context);
+        final selectedDate = GoRouterState.of(context).uri.queryParameters['date'] ?? '날짜가 선택되지 않았습니다.';
+        PdfDownloadModal.show(context, selectedDate);
         // PDF 다운로드
       },
       child: Container(
