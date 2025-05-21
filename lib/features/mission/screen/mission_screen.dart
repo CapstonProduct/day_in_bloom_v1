@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:day_in_bloom_v1/features/authentication/service/fitbit_auth_service.dart';
 import 'package:day_in_bloom_v1/widgets/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 
 class MissionScreen extends StatelessWidget {
   const MissionScreen({super.key});
@@ -35,21 +38,21 @@ class MissionScreen extends StatelessWidget {
 
           return Column(
             children: [
-              if (accessToken != null)
-                Text(
-                  "Access Token: $accessToken",
-                  style: const TextStyle(fontSize: 12),
-                ),
-              if (refreshToken != null)
-                Text(
-                  "Refresh Token: $refreshToken",
-                  style: const TextStyle(fontSize: 12),
-                ),
-              if (userId != null)
-                Text(
-                  "User ID: $userId",
-                  style: const TextStyle(fontSize: 12),
-                ),
+              // if (accessToken != null)
+              //   Text(
+              //     "Access Token: $accessToken",
+              //     style: const TextStyle(fontSize: 12),
+              //   ),
+              // if (refreshToken != null)
+              //   Text(
+              //     "Refresh Token: $refreshToken",
+              //     style: const TextStyle(fontSize: 12),
+              //   ),
+              // if (userId != null)
+              //   Text(
+              //     "User ID: $userId",
+              //     style: const TextStyle(fontSize: 12),
+              //   ),
               Expanded(
                 child: SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
@@ -71,11 +74,13 @@ class MissionScreen extends StatelessWidget {
                           context,
                           title: '어제의 건강 리포트 확인하기',
                           imagePath: 'assets/mission_icon/report.png',
-                          onTap: () {
+                          onTap: () async {
                             final yesterday = DateFormat('yyyy-MM-dd').format(
                               DateTime.now().subtract(const Duration(days: 1)),
                             );
                             context.go('/homeCalendar/report?date=$yesterday');
+
+                            await updateMission('mission_report');
                           },
                           isChecked: false,
                         ),
@@ -83,8 +88,9 @@ class MissionScreen extends StatelessWidget {
                           context,
                           title: '맞춤형 운동 추천 확인',
                           imagePath: 'assets/mission_icon/runner.png',
-                          onTap: () {
+                          onTap: () async {
                             context.go('/homeCalendar/exerciseRecommendation');
+                            await updateMission('mission_exercise');
                           },
                           isChecked: true,
                         ),
@@ -92,8 +98,9 @@ class MissionScreen extends StatelessWidget {
                           context,
                           title: '수면패턴에 따른 행동 추천 확인',
                           imagePath: 'assets/mission_icon/recommendation.png',
-                          onTap: () {
+                          onTap: () async {
                             context.go('/homeCalendar/sleepRecommendation');
+                            await updateMission('mission_sleep');
                           },
                           isChecked: false,
                         ),
@@ -194,5 +201,25 @@ class MissionScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> updateMission(String missionType) async {
+    final encodedId = await FitbitAuthService.getUserId();
+    if (encodedId == null) return;
+
+    final response = await http.post(
+      Uri.parse('https://5ft8cwlwua.execute-api.ap-northeast-2.amazonaws.com/default/update-mission'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'encodedId': encodedId,
+        'mission_type': missionType,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      debugPrint('미션 업데이트 실패: ${response.body}');
+    } else {
+      debugPrint('미션 업데이트 성공: ${response.body}');
+    }
   }
 }

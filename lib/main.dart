@@ -86,7 +86,7 @@ Future<void> sendTokenToLambda(String fcmToken) async {
     return;
   }
 
-  final url = Uri.parse('https://qod167lvkc.execute-api.ap-northeast-2.amazonaws.com/default/save-fcm-device-token');
+  final url = Uri.parse('https://e1tbu7jvyh.execute-api.ap-northeast-2.amazonaws.com/prod/fcm/device-token');
 
   final Map<String, dynamic> data = {
     'encodedId': encodedId,
@@ -94,7 +94,7 @@ Future<void> sendTokenToLambda(String fcmToken) async {
     'platform': 'android',
   };
 
-  final response = await http.post(
+  final response = await http.put(
     url,
     headers: {
       'Content-Type': 'application/json',

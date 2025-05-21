@@ -56,7 +56,7 @@ class Ago30plusReportCategoryScreen extends StatelessWidget {
             const SizedBox(height: 30),
             GestureDetector(
               onTap: () {
-                // PDF Viewer로 이동하는 코드 추가
+                context.go('/homeCalendar/ago30plusReport/pdfReportViewer');
               },
               child: Container(
                 width: double.infinity,
@@ -173,6 +173,7 @@ class DownloadReportButton extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         PdfDownloadModal.show(context);
+        // PDF 다운로드
       },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),

@@ -276,11 +276,20 @@ class _HealthQnaScreenState extends State<HealthQnaScreen> {
     }
   }
 
-  void _showResponseDialog(String responseBody) {
+  void _showResponseDialog(String responseBody) async {
     Map<String, dynamic> jsonResponse = json.decode(responseBody);
     String analysisText = jsonResponse['analysis'];
     String result = analysisText.replaceAll(r'\n', '\n');
-    
+
+    final encodedId = await FitbitAuthService.getUserId();
+    if (encodedId != null) {
+      await http.post(
+        Uri.parse('https://yr3c93xvrf.execute-api.ap-northeast-2.amazonaws.com/default/update-qna-mission'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'encodedId': encodedId}),
+      );
+    }
+
     showDialog(
       context: context,
       builder: (BuildContext context) {

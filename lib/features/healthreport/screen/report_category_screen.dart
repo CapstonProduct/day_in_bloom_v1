@@ -33,6 +33,14 @@ class _ReportCategoryScreenState extends State<ReportCategoryScreen> {
 
     final formattedDate = _parseReportDate(reportDateRaw);
 
+    debugPrint('=== API 요청 정보 ===');
+    debugPrint('Headers: {Content-Type: application/json}');
+    debugPrint('Body: ${jsonEncode({
+        'encodedId': encodedId,
+        'report_date': formattedDate,
+      })}');
+    debugPrint('=====================');
+
     final response = await http.post(
       Uri.parse('https://w3labpvlec.execute-api.ap-northeast-2.amazonaws.com/prod/report-category'),
       headers: {'Content-Type': 'application/json'},
