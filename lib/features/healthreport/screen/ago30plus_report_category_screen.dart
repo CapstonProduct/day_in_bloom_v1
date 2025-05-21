@@ -56,7 +56,8 @@ class Ago30plusReportCategoryScreen extends StatelessWidget {
             const SizedBox(height: 30),
             GestureDetector(
               onTap: () {
-                context.go('/homeCalendar/ago30plusReport/pdfReportViewer');
+                final selectedDate = GoRouterState.of(context).uri.queryParameters['date'] ?? '';
+                context.go('/homeCalendar/ago30plusReport/pdfReportViewer?date=$selectedDate'); 
               },
               child: Container(
                 width: double.infinity,

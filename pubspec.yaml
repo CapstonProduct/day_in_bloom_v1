@@ -55,6 +55,7 @@ dependencies:
   cloud_firestore: ^5.6.7
   webview_flutter: ^4.12.0
   flutter_pdfview: ^1.4.0+1
+  easy_pdf_viewer: ^1.0.8
 
 flutter_native_splash:
   android: true
