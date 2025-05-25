@@ -39,7 +39,10 @@ class _ReportExerciseScreenState extends State<ReportExerciseScreen> {
     final formattedDate = _parseReportDate(reportDateRaw);
 
     final response = await http.post(
-      Uri.parse('https://w3labpvlec.execute-api.ap-northeast-2.amazonaws.com/prod/report-category'),
+      Uri.parse('https://w3labpvlec.execute-api.ap-northeast-2.amazonaws.com/prod/report-category').replace(queryParameters: {
+      'encodedId': encodedId,
+      'report_date': formattedDate,
+    }),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'encodedId': encodedId,

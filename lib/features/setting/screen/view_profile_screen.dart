@@ -95,12 +95,24 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
 
     return Row(
       children: [
+        // CircleAvatar(
+        //   radius: 40,
+        //   backgroundColor: Colors.white,
+        //   backgroundImage: data['profile_image_url'] != null
+        //       ? NetworkImage(data['profile_image_url'])
+        //       : const AssetImage('assets/profile_icon/green_profile.png') as ImageProvider,
+        // ),
         CircleAvatar(
           radius: 40,
           backgroundColor: Colors.white,
-          backgroundImage: data['profile_image_url'] != null
-              ? NetworkImage(data['profile_image_url'])
-              : const AssetImage('assets/profile_icon/green_profile.png') as ImageProvider,
+          child: ClipOval(
+            child: Image.asset(
+              'assets/profile_icon/green_profile.png',
+              fit: BoxFit.cover,
+              width: 80,
+              height: 80,
+            ),
+          ),
         ),
         const SizedBox(width: 16),
         Column(

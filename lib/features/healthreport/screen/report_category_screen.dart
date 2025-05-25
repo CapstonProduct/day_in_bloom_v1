@@ -27,28 +27,27 @@ class _ReportCategoryScreenState extends State<ReportCategoryScreen> {
     final encodedId = await FitbitAuthService.getUserId();
     final reportDateRaw = GoRouterState.of(context).uri.queryParameters['date'];
 
+    debugPrint('>>> encodedId: $encodedId');
+    debugPrint('>>> reportDateRaw: $reportDateRaw');
+
     if (encodedId == null || reportDateRaw == null) {
       throw Exception('사용자 정보 또는 날짜가 없습니다.');
     }
 
     final formattedDate = _parseReportDate(reportDateRaw);
 
+    final uri = Uri.parse(
+      'https://w3labpvlec.execute-api.ap-northeast-2.amazonaws.com/prod/report-category'
+    ).replace(queryParameters: {
+      'encodedId': encodedId,
+      'report_date': formattedDate,
+    });
+
     debugPrint('=== API 요청 정보 ===');
-    debugPrint('Headers: {Content-Type: application/json}');
-    debugPrint('Body: ${jsonEncode({
-        'encodedId': encodedId,
-        'report_date': formattedDate,
-      })}');
+    debugPrint('GET URL: $uri');
     debugPrint('=====================');
 
-    final response = await http.post(
-      Uri.parse('https://w3labpvlec.execute-api.ap-northeast-2.amazonaws.com/prod/report-category'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'encodedId': encodedId,
-        'report_date': formattedDate,
-      }),
-    );
+    final response = await http.get(uri, headers: {'Content-Type': 'application/json'});
 
     if (response.statusCode != 200) {
       throw Exception('데이터 로드 실패: ${response.body}');
@@ -56,6 +55,7 @@ class _ReportCategoryScreenState extends State<ReportCategoryScreen> {
 
     return json.decode(response.body);
   }
+
 
   String _parseReportDate(String rawDate) {
     try {
