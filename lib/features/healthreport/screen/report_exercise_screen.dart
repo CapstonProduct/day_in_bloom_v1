@@ -40,9 +40,9 @@ class _ReportExerciseScreenState extends State<ReportExerciseScreen> {
 
     final response = await http.post(
       Uri.parse('https://w3labpvlec.execute-api.ap-northeast-2.amazonaws.com/prod/report-category').replace(queryParameters: {
-      'encodedId': encodedId,
-      'report_date': formattedDate,
-    }),
+        'encodedId': encodedId,
+        'report_date': formattedDate,
+      }),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'encodedId': encodedId,
@@ -76,6 +76,71 @@ class _ReportExerciseScreenState extends State<ReportExerciseScreen> {
     return '$value';
   }
 
+  Future<String> _fetchGraphUrl(String graphType) async {
+    try {
+      final encodedId = await FitbitAuthService.getUserId();
+      final rawDate = GoRouterState.of(context).uri.queryParameters['date'] ?? '';
+
+      if (encodedId == null || rawDate.isEmpty) {
+        throw Exception("날짜 또는 사용자 정보가 없습니다.");
+      }
+
+      final cleaned = rawDate.replaceAll('/', '-').replaceAll(' ', '');
+      final formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.parse(cleaned));
+
+      final response = await http.post(
+        Uri.parse('https://hrag4ozp99.execute-api.ap-northeast-2.amazonaws.com/default/get-graph-report'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          "encodedId": encodedId,
+          "report_date": formattedDate,
+          "graph_type": graphType,
+        }),
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception("[$graphType] 그래프 이미지 URL 요청 실패");
+      }
+
+      final result = jsonDecode(response.body);
+      final url = result['cleanedUrl'];
+      if (url == null) throw Exception("[$graphType] cleanedUrl이 응답에 없습니다.");
+      return url;
+    } catch (e, stack) {
+      print('[ERROR][$graphType]: $e');
+      print('[STACKTRACE][$graphType]: $stack');
+      rethrow;
+    }
+  }
+
+  Widget buildGraphSection(String title, String graphType) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20),
+      width: double.infinity,
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: const Color(0xFF41af7a), width: 2),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: FutureBuilder<String>(
+          future: _fetchGraphUrl(graphType),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const SizedBox(height: 200, child: Center(child: CircularProgressIndicator()));
+            } else if (snapshot.hasError || !snapshot.hasData) {
+              return Text('$title 그래프를 불러올 수 없습니다.');
+            } else {
+              return Image.network(snapshot.data!, fit: BoxFit.cover);
+            }
+          },
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final selectedDate = GoRouterState.of(context).uri.queryParameters['date'] ?? '날짜 없음';
@@ -104,8 +169,6 @@ class _ReportExerciseScreenState extends State<ReportExerciseScreen> {
             final caloriesBurned = formatNumber(data['calories_burned'], '칼로리');
             final String analysis = data['exercise_gpt_analysis'] ?? '분석 데이터가 없습니다.';
 
-            final String exerciseGraphPath = data['exercise_graph_path'] ?? '';
-
             return SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.all(16.0),
@@ -130,24 +193,8 @@ class _ReportExerciseScreenState extends State<ReportExerciseScreen> {
                   ),
                   const SizedBox(height: 16),
 
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(color: primaryColor, width: 2),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.asset(
-                        'assets/remove_img/exercise_graph_ex.png',
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
+                  buildGraphSection("심박수 그래프", "heartrate"),
+                  buildGraphSection("걸음수/칼로리 그래프", "steps_calories"),
 
                   buildRowItem("평균 운동 시간", avgExerciseTime),
                   buildRowItem("평균 심박수", avgHeartRate),
