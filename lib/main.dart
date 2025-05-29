@@ -86,7 +86,7 @@ Future<void> sendTokenToLambda(String fcmToken) async {
     return;
   }
 
-  final url = Uri.parse('https://e1tbu7jvyh.execute-api.ap-northeast-2.amazonaws.com/prod/fcm/device-token');
+  final url = Uri.parse('https://e1tbu7jvyh.execute-api.ap-northeast-2.amazonaws.com/Prod/fcm/device-token');
 
   final Map<String, dynamic> data = {
     'encodedId': encodedId,
