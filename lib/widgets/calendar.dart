@@ -1,6 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
+import 'package:day_in_bloom_v1/features/authentication/service/fitbit_auth_service.dart';
 
 class CalendarWidget extends StatefulWidget {
   final Function(DateTime) onDateSelected;
@@ -15,6 +18,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
   DateTime? _focusedDay;
   DateTime? _selectedDay;
   final TextEditingController _dateController = TextEditingController();
+  Map<String, String> _markerMap = {}; // 'yyyy-MM-dd': marker_type
 
   @override
   void initState() {
@@ -22,7 +26,35 @@ class _CalendarWidgetState extends State<CalendarWidget> {
     _focusedDay = DateTime.now();
     _selectedDay = _focusedDay;
     _updateTextField();
+    _fetchMarkersFromServer();
   }
+
+  Future<void> _fetchMarkersFromServer() async {
+    final encodedId = await FitbitAuthService.getUserId();
+    if (encodedId == null) return;
+
+    final uri = Uri.parse('https://1hncugwld2.execute-api.ap-northeast-2.amazonaws.com/default/get-mission-state')
+        .replace(queryParameters: {'encodedId': encodedId});
+
+    try {
+      final response = await http.get(uri, headers: {'Content-Type': 'application/json'});
+      if (response.statusCode == 200) {
+        final List<dynamic> markerData = jsonDecode(response.body);
+        setState(() {
+          _markerMap = {
+            for (var item in markerData)
+              DateFormat('yyyy-MM-dd').format(DateTime.parse(item['date'])): item['marker_type']
+          };
+          debugPrint('정규화된 마커 데이터: $_markerMap');
+        });
+      } else {
+        debugPrint('마커 데이터 로드 실패: ${response.statusCode} ${response.body}');
+      }
+    } catch (e) {
+      debugPrint('마커 API 호출 에러: $e');
+    }
+  }
+
 
   void _updateTextField() {
     if (_selectedDay != null) {
@@ -33,15 +65,14 @@ class _CalendarWidgetState extends State<CalendarWidget> {
   void _onTextFieldSubmitted(String value) {
     try {
       DateTime parsedDate = DateFormat('yyyy/MM/dd').parse(value);
-      DateTime firstAllowedDate = DateTime.utc(2020, 1, 1);
-      DateTime lastAllowedDate = DateTime.utc(2060, 12, 31);
+      final first = DateTime.utc(2020, 1, 1);
+      final last = DateTime.utc(2060, 12, 31);
 
-      if (parsedDate.isBefore(firstAllowedDate) || parsedDate.isAfter(lastAllowedDate)) {
+      if (parsedDate.isBefore(first) || parsedDate.isAfter(last)) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('⛔ 2020/01/01 ~ 2060/12/31 사이의 날짜를 입력해주세요.')),
         );
-
-        parsedDate = parsedDate.isBefore(firstAllowedDate) ? firstAllowedDate : lastAllowedDate;
+        parsedDate = parsedDate.isBefore(first) ? first : last;
       }
 
       setState(() {
@@ -55,7 +86,6 @@ class _CalendarWidgetState extends State<CalendarWidget> {
       );
     }
   }
-
 
   Future<void> _showDatePicker() async {
     DateTime? pickedDate = await showDatePicker(
@@ -134,24 +164,22 @@ class _CalendarWidgetState extends State<CalendarWidget> {
             weekendStyle: TextStyle(fontSize: 12, color: Colors.red),
           ),
           calendarBuilders: CalendarBuilders(
-            defaultBuilder: (context, date, events) {
-              if (date.day % 6 == 5) {
-                return Center(
-                  child: Text(
-                    '${date.day}',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                );
-              } else {
+            defaultBuilder: (context, date, _) {
+              final key = DateFormat('yyyy-MM-dd').format(date);
+              final marker = _markerMap[key];
+
+              if (marker != null && marker != 'none') {
                 return Center(
                   child: Image.asset(
-                    getImagePath(date),
+                    getImagePathFromMarker(marker),
                     width: 35,
                     height: 35,
                     fit: BoxFit.contain,
                   ),
                 );
               }
+
+              return Center(child: Text('${date.day}'));
             },
           ),
         ),
@@ -160,14 +188,19 @@ class _CalendarWidgetState extends State<CalendarWidget> {
   }
 }
 
-String getImagePath(DateTime date) {
-  const images = {
-    0: "assets/flower_phase/flower_phase0.png",
-    1: "assets/flower_phase/flower_phase1.png",
-    2: "assets/flower_phase/flower_phase2.png",
-    3: "assets/flower_phase/flower_phase3.png",
-    4: "assets/flower_phase/flower_phase4.png",
-  };
-
-  return images[date.day % 6] ?? "";
+String getImagePathFromMarker(String marker) {
+  switch (marker) {
+    case 'seed':
+      return 'assets/flower_phase/flower_phase0.png';
+    case 'sprout':
+      return 'assets/flower_phase/flower_phase1.png';
+    case 'leaf':
+      return 'assets/flower_phase/flower_phase2.png';
+    case 'flowerbud':
+      return 'assets/flower_phase/flower_phase3.png';
+    case 'flower':
+      return 'assets/flower_phase/flower_phase4.png';
+    default:
+      return ''; // none or undefined
+  }
 }
