@@ -18,7 +18,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
   DateTime? _focusedDay;
   DateTime? _selectedDay;
   final TextEditingController _dateController = TextEditingController();
-  Map<String, String> _markerMap = {}; // 'yyyy-MM-dd': marker_type
+  Map<String, Map<String, dynamic>> _markerMap = {};
 
   @override
   void initState() {
@@ -33,8 +33,9 @@ class _CalendarWidgetState extends State<CalendarWidget> {
     final encodedId = await FitbitAuthService.getUserId();
     if (encodedId == null) return;
 
-    final uri = Uri.parse('https://1hncugwld2.execute-api.ap-northeast-2.amazonaws.com/default/get-mission-state')
-        .replace(queryParameters: {'encodedId': encodedId});
+    final uri = Uri.parse(
+      'https://1hncugwld2.execute-api.ap-northeast-2.amazonaws.com/default/get-mission-state',
+    ).replace(queryParameters: {'encodedId': encodedId});
 
     try {
       final response = await http.get(uri, headers: {'Content-Type': 'application/json'});
@@ -43,9 +44,11 @@ class _CalendarWidgetState extends State<CalendarWidget> {
         setState(() {
           _markerMap = {
             for (var item in markerData)
-              DateFormat('yyyy-MM-dd').format(DateTime.parse(item['date'])): item['marker_type']
+              DateFormat('yyyy-MM-dd').format(DateTime.parse(item['date'])): {
+                'marker_type': item['marker_type'],
+                'has_report': item['has_report'] ?? false,
+              }
           };
-          debugPrint('정규화된 마커 데이터: $_markerMap');
         });
       } else {
         debugPrint('마커 데이터 로드 실패: ${response.statusCode} ${response.body}');
@@ -54,7 +57,6 @@ class _CalendarWidgetState extends State<CalendarWidget> {
       debugPrint('마커 API 호출 에러: $e');
     }
   }
-
 
   void _updateTextField() {
     if (_selectedDay != null) {
@@ -166,20 +168,52 @@ class _CalendarWidgetState extends State<CalendarWidget> {
           calendarBuilders: CalendarBuilders(
             defaultBuilder: (context, date, _) {
               final key = DateFormat('yyyy-MM-dd').format(date);
-              final marker = _markerMap[key];
+              final data = _markerMap[key];
 
-              if (marker != null && marker != 'none') {
-                return Center(
-                  child: Image.asset(
-                    getImagePathFromMarker(marker),
-                    width: 35,
-                    height: 35,
-                    fit: BoxFit.contain,
+              final marker = data?['marker_type'];
+              final hasReport = data?['has_report'];
+
+              Widget dayText = Text(
+                '${date.day}',
+                style: TextStyle(color: Colors.black),
+              );
+
+              List<Widget> children = [dayText];
+
+              if (hasReport != true) {
+                children.add(
+                  Opacity(
+                    opacity: 0.6,
+                    child: Container(
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        color: Colors.grey,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
                   ),
                 );
               }
 
-              return Center(child: Text('${date.day}'));
+              if (marker != null && marker != 'none') {
+                children.add(
+                  Opacity(
+                    opacity: 0.4,
+                    child: Image.asset(
+                      getImagePathFromMarker(marker),
+                      width: 35,
+                      height: 35,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                );
+              }
+
+              return Stack(
+                alignment: Alignment.center,
+                children: children,
+              );
             },
           ),
         ),
@@ -201,6 +235,6 @@ String getImagePathFromMarker(String marker) {
     case 'flower':
       return 'assets/flower_phase/flower_phase4.png';
     default:
-      return ''; // none or undefined
+      return '';
   }
 }
