@@ -127,15 +127,31 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),                      
                       onPressed: () async {
                         try {
+                          // 수정 전
+                          // final result = await FitbitAuthService.loginWithFitbit(autoLogin: _autoLogin);
+                          // final alreadyEntered = await FitbitAuthService.isUserInfoEntered();
+                          // if (!mounted) return;
+
+                          // if (!alreadyEntered) {
+                          //   context.go('/login/inputUserInfo');
+                          // } else {
+                          //   context.go('/main');
+                          // }
+                          
+                          // 수정 후
                           final result = await FitbitAuthService.loginWithFitbit(autoLogin: _autoLogin);
-                          final alreadyEntered = await FitbitAuthService.isUserInfoEntered();
+                          final userInfoEntered = await FitbitAuthService.checkUserInfoEnteredFromServer();
+
+                          debugPrint("userInfoEntered: $userInfoEntered");
+
                           if (!mounted) return;
 
-                          if (!alreadyEntered) {
+                          if (!userInfoEntered) {
                             context.go('/login/inputUserInfo');
                           } else {
                             context.go('/main');
                           }
+
                         } catch (e) {
                           print("로그인 에러: $e");
                           ScaffoldMessenger.of(context).showSnackBar(

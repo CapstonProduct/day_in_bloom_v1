@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:day_in_bloom_v1/features/authentication/service/myinapp_browser.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -88,6 +89,7 @@ class FitbitAuthService {
       await _storage.write(key: 'refresh_token', value: refreshToken);
       await _storage.write(key: 'is_first_login', value: 'true');
       await _storage.write(key: 'auto_login', value: autoLogin.toString());
+      await _storage.write(key: 'encodedId', value: fitbitUserId);
 
       final sendingJsonData = {
         "fitbit_user_id": fitbitUserId,
@@ -168,7 +170,26 @@ class FitbitAuthService {
     return result == 'true';
   }
 
-  static Future<void> setUserInfoEntered() async {
-    await _storage.write(key: 'user_info_entered', value: 'true');
+  static Future<bool> checkUserInfoEnteredFromServer() async {
+  final encodedId = await _storage.read(key: 'encodedId');
+  if (encodedId == null) return false;
+
+  final url = Uri.parse('https://1bvmlkm0u6.execute-api.ap-northeast-2.amazonaws.com/default/check-user-info-entered?encodedId=$encodedId');
+  debugPrint("encodedId: $encodedId");
+  
+  try {
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['allEntered'] == true;
+    } else {
+      print("서버 응답 에러: ${response.statusCode} - ${response.body}");
+      return false;
+    }
+  } catch (e) {
+    print("유저 정보 확인 API 호출 실패: $e");
+    return false;
+    }
   }
 }
+

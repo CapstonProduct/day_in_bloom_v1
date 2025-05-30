@@ -53,7 +53,6 @@ class _InputUserInfoScreenState extends State<InputUserInfoScreen> {
 
       final decodedBody = utf8.decode(response.bodyBytes);
       if (response.statusCode == 200) {
-        await FitbitAuthService.setUserInfoEntered();
         context.go('/main');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
