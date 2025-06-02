@@ -108,7 +108,7 @@ class _ReportSleepScreenState extends State<ReportSleepScreen> {
             }
 
             final data = snapshot.data!;
-            final String sleepScore = formatValue(data['sleep_score']);
+            final String sleepScore = '${((data['sleep_score'] as num?)?.toDouble() ?? 0.0).toStringAsFixed(1)} 점';
             final String timeinBed = formatMinutes(data['timeinBed']);
             final String minutesAsleep = formatMinutes(data['minutesAsleep']);
             final String analysis = data['sleep_gpt_analysis'] ?? '분석 데이터가 없습니다.';
