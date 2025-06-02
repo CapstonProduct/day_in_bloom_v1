@@ -122,7 +122,7 @@ class _ReportCategoryScreenState extends State<ReportCategoryScreen> {
                         if (index == 0 || index == 1) {
                           return ScoreReportCategoryTile(
                             category: category.copyWith(
-                              score: index == 0 ? overallHealthScore : stressScore,
+                              score: index == 0 ? (overallHealthScore as num).toInt() : (stressScore as num).toInt(),
                             ),
                             color: index == 0 ? Colors.yellow.shade100 : Colors.grey.shade200,
                           );

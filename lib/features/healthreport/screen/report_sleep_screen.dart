@@ -74,6 +74,17 @@ class _ReportSleepScreenState extends State<ReportSleepScreen> {
     return value ?? '-';
   }
 
+  String formatMinutes(dynamic value) {
+    if (value is! int) return '0분';
+    final hours = value ~/ 60;
+    final minutes = value % 60;
+    if (hours > 0) {
+      return '$hours시간 ${minutes}분';
+    } else {
+      return '$minutes분';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final selectedDate = GoRouterState.of(context).uri.queryParameters['date'] ?? '날짜 없음';
@@ -98,8 +109,8 @@ class _ReportSleepScreenState extends State<ReportSleepScreen> {
 
             final data = snapshot.data!;
             final String sleepScore = formatValue(data['sleep_score']);
-            final String spo2Variation = formatValue(data['spo2_variation']);
-            final String sleepHeartRate = formatValue(data['sleep_heart_rate']);
+            final String timeinBed = formatMinutes(data['timeinBed']);
+            final String minutesAsleep = formatMinutes(data['minutesAsleep']);
             final String analysis = data['sleep_gpt_analysis'] ?? '분석 데이터가 없습니다.';
 
             final String heartratePath = data['sleep_heartrate_path'] ?? '';
@@ -166,8 +177,8 @@ class _ReportSleepScreenState extends State<ReportSleepScreen> {
                   const SizedBox(height: 20),
 
                   buildRowItem("수면 스코어", sleepScore),
-                  buildRowItem("예상 산소량 변화", spo2Variation),
-                  buildRowItem("수면 중 심박수", sleepHeartRate),
+                  buildRowItem("침대에 누워있던 시간", timeinBed),
+                  buildRowItem("실제 수면 시간", minutesAsleep),
 
                   const SizedBox(height: 20),
 

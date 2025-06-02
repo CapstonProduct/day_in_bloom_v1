@@ -141,6 +141,17 @@ class _ReportExerciseScreenState extends State<ReportExerciseScreen> {
     );
   }
 
+  String formatMinutes(dynamic value) {
+    if (value is! int) return '0분';
+    final hours = value ~/ 60;
+    final minutes = value % 60;
+    if (hours > 0) {
+      return '$hours시간 ${minutes}분';
+    } else {
+      return '$minutes분';
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     final selectedDate = GoRouterState.of(context).uri.queryParameters['date'] ?? '날짜 없음';
@@ -164,7 +175,7 @@ class _ReportExerciseScreenState extends State<ReportExerciseScreen> {
             }
 
             final data = snapshot.data!;
-            final avgExerciseTime = formatNumber(data['avg_exercise_time'], '분');
+            final totalActivityTime = formatMinutes(data['total_activity_time']);
             final avgHeartRate = formatNumber(data['avg_heart_rate'], 'bpm');
             final caloriesBurned = formatNumber(data['calories_burned'], '칼로리');
             final String analysis = data['exercise_gpt_analysis'] ?? '분석 데이터가 없습니다.';
@@ -196,7 +207,7 @@ class _ReportExerciseScreenState extends State<ReportExerciseScreen> {
                   buildGraphSection("심박수 그래프", "heartrate"),
                   buildGraphSection("걸음수/칼로리 그래프", "steps_calories"),
 
-                  buildRowItem("평균 운동 시간", avgExerciseTime),
+                  buildRowItem("총 운동 시간", totalActivityTime),
                   buildRowItem("평균 심박수", avgHeartRate),
                   buildRowItem("에너지 소모량", caloriesBurned),
 
