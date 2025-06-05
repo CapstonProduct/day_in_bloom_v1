@@ -17,14 +17,46 @@ class _InputUserInfoScreenState extends State<InputUserInfoScreen> {
     "이름": TextEditingController(),
     "키 (cm)": TextEditingController(),
     "체중 (kg)": TextEditingController(),
-    "생년월일": TextEditingController(),
   };
 
   String? _selectedGender;
   final List<String> _genders = ["남성", "여성"];
+  DateTime? _selectedDate;
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate ?? DateTime(1960, 1, 1),
+      firstDate: DateTime(1960),
+      lastDate: DateTime.now(),
+      locale: const Locale('ko', 'KR'),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: Theme.of(context).colorScheme.copyWith(
+              primary: Colors.orange,
+              onPrimary: Colors.white,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+      });
+    }
+  }
+
+  String _formatDate(DateTime date) {
+    return "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+  }
 
   void _onComplete() async {
-    if (_controllers.values.any((controller) => controller.text.isEmpty) || _selectedGender == null) {
+    if (_controllers.values.any((controller) => controller.text.isEmpty) || 
+        _selectedGender == null || 
+        _selectedDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("모든 정보를 입력해주세요.")),
       );
@@ -37,7 +69,7 @@ class _InputUserInfoScreenState extends State<InputUserInfoScreen> {
       "username": _controllers["이름"]!.text.trim(),
       "height": _controllers["키 (cm)"]!.text.trim(),
       "weight": _controllers["체중 (kg)"]!.text.trim(),
-      "birth_date": _controllers["생년월일"]!.text.trim(),
+      "birth_date": _formatDate(_selectedDate!),
       "gender": _selectedGender,
       "encodedId": encodedId,
       "role": "senior",
@@ -116,7 +148,36 @@ class _InputUserInfoScreenState extends State<InputUserInfoScreen> {
                       keyboardType: entry.key == "이름" ? TextInputType.text : TextInputType.number,
                     ),
                   ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 8),
+                // 생년월일 선택 필드
+                GestureDetector(
+                  onTap: () => _selectDate(context),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(12),
+                      color: Colors.grey[100],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          _selectedDate == null 
+                              ? "생년월일" 
+                              : _formatDate(_selectedDate!),
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: _selectedDate == null ? Colors.grey[600] : Colors.black,
+                          ),
+                        ),
+                        const Icon(Icons.calendar_today, color: Colors.orange),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
                 DropdownButtonFormField<String>(
                   value: _selectedGender,
                   items: _genders
@@ -176,5 +237,4 @@ class _InputUserInfoScreenState extends State<InputUserInfoScreen> {
       ),
     );
   }
-
 }
