@@ -67,6 +67,122 @@ class _ReportStressScoreScreenState extends State<ReportStressScoreScreen> {
     }
   }
 
+  void _showStressScoreInfoModal(BuildContext context, int stressScore) {
+    String stateDescription;
+    String recommendedAction;
+
+    if (stressScore >= 0 && stressScore <= 20) {
+      stateDescription = "매우 양호";
+      recommendedAction = "휴식이 잘 되었음, 휴식 권장";
+    } else if (stressScore >= 21 && stressScore <= 40) {
+      stateDescription = "양호/정상 범위";
+      recommendedAction = "스트레스 낮음, 활동 가능";
+    } else if (stressScore >= 41 && stressScore <= 60) {
+      stateDescription = "주의 단계";
+      recommendedAction = "일시적 스트레스 증가 가능";
+    } else if (stressScore >= 61 && stressScore <= 80) {
+      stateDescription = "경고 단계";
+      recommendedAction = "회복 필요, 휴식 권장";
+    } else {
+      stateDescription = "매우 높은 스트레스";
+      recommendedAction = "피로 누적, 회복 및 점검 필요";
+    }
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          backgroundColor: Colors.orange[50],
+          title: Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.orange,
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: const Text(
+              "스트레스 점수 범위",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                fontSize: 18,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.orange[300]!),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "현재 점수: $stressScore",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.orange[800],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      "상태: $stateDescription",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.orange[700],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      "권장 행동: $recommendedAction",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.orange[700],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            Container(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+                child: const Text(
+                  "확인",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,85 +214,123 @@ class _ReportStressScoreScreenState extends State<ReportStressScoreScreen> {
               {'label': '수면 기반 점수 기여도', 'value': sleepContribution},
             ];
 
-            return SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 20),
-                  const Text(
-                    "스트레스 점수",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black54),
-                  ),
-                  const SizedBox(height: 50),
-                  Stack(
-                    alignment: Alignment.center,
+            return Stack(
+              children: [
+                SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 120.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      SizedBox(
-                        width: 200,
-                        height: 200,
-                        child: CircularProgressIndicator(
-                          value: stressScore / 100,
-                          strokeWidth: 3,
-                          backgroundColor: Colors.red[100],
-                          valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
-                        ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        "스트레스 점수",
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black54),
                       ),
-                      Container(
-                        width: 160,
-                        height: 160,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.red,
-                              spreadRadius: 5,
-                              blurRadius: 10,
+                      const SizedBox(height: 50),
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          SizedBox(
+                            width: 200,
+                            height: 200,
+                            child: CircularProgressIndicator(
+                              value: stressScore / 100,
+                              strokeWidth: 3,
+                              backgroundColor: Colors.red[100],
+                              valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
                             ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Text(
-                            "$stressScore",
-                            style: const TextStyle(fontSize: 50, fontWeight: FontWeight.bold, color: Colors.red),
                           ),
-                        ),
+                          Container(
+                            width: 160,
+                            height: 160,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.red,
+                                  spreadRadius: 5,
+                                  blurRadius: 10,
+                                ),
+                              ],
+                            ),
+                            child: Center(
+                              child: Text(
+                                "$stressScore",
+                                style: const TextStyle(fontSize: 50, fontWeight: FontWeight.bold, color: Colors.red),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 60),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: healthData.length,
+                        itemBuilder: (context, index) {
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 10),
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  healthData[index]['label']!,
+                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.black45),
+                                ),
+                                Text(
+                                  healthData[index]['value']!,
+                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black54),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
-                  const SizedBox(height: 60),
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: healthData.length,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 10),
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[200],
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              healthData[index]['label']!,
-                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.black45),
+                ),
+                Positioned(
+                  bottom: 30,
+                  left: 20,
+                  right: 20,
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.orange[100],
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(color: Colors.orange[300]!),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            "스트레스 점수 의미 확인하기",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.orange[800],
                             ),
-                            Text(
-                              healthData[index]['value']!,
-                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black54),
-                            ),
-                          ],
+                          ),
                         ),
-                      );
-                    },
+                        const SizedBox(width: 10),
+                        FloatingActionButton(
+                          onPressed: () => _showStressScoreInfoModal(context, stressScore),
+                          backgroundColor: Colors.orange,
+                          child: const Icon(Icons.info, color: Colors.white),
+                        ),
+                      ],
+                    ),
                   ),
-                ],
-              ),
+                ),
+              ],
             );
           },
         ),

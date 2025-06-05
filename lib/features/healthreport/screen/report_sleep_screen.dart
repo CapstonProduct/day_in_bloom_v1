@@ -85,6 +85,128 @@ class _ReportSleepScreenState extends State<ReportSleepScreen> {
     }
   }
 
+  void _showSleepStagesModal() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      '수면 단계별 의미',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF6B46C1),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: const Icon(Icons.close, color: Color(0xFF6B46C1)),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                _buildSleepStageItem(
+                  '깊은 수면',
+                  '신체적 회복과 기억 강화가 일어나는 가장 중요한 수면 단계입니다. 성장호르몬이 분비되어 근육과 조직이 회복됩니다.',
+                  const Color(0xFF6B46C1),
+                ),
+                const SizedBox(height: 12),
+                _buildSleepStageItem(
+                  '얕은 수면',
+                  '깊은 잠에 들어가기 전 단계로, 몸이 서서히 휴식 상태로 전환됩니다. 쉽게 깰 수 있는 상태입니다.',
+                  const Color(0xFF6B46C1),
+                ),
+                const SizedBox(height: 12),
+                _buildSleepStageItem(
+                  '렘 수면',
+                  '꿈을 꾸는 단계로 뇌가 활발하게 활동합니다. 기억 정리와 학습 내용 정착이 이루어집니다.',
+                  const Color(0xFF6B46C1),
+                ),
+                const SizedBox(height: 12),
+                _buildSleepStageItem(
+                  '수면 중 깸',
+                  '밤중에 잠깐 깨는 것은 정상이지만, 너무 자주 깨면 수면의 질이 떨어질 수 있습니다.',
+                  const Color(0xFF6B46C1),
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF6B46C1),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                    child: const Text(
+                      '확인',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildSleepStageItem(String title, String description, Color color) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        border: Border.all(color: color, width: 1),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            description,
+            style: const TextStyle(
+              fontSize: 14,
+              color: Colors.black87,
+              height: 1.4,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final selectedDate = GoRouterState.of(context).uri.queryParameters['date'] ?? '날짜 없음';
@@ -181,6 +303,47 @@ class _ReportSleepScreenState extends State<ReportSleepScreen> {
                   buildRowItem("실제 수면 시간", minutesAsleep),
 
                   const SizedBox(height: 20),
+
+                  // 수면 단계별 의미 확인하기 버튼 추가
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 20.0),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: _showSleepStagesModal,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF6B46C1),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              "수면 단계별 의미 확인하기",
+                              style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              width: 20,
+                              height: 20,
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.mode_night_outlined,
+                                size: 16,
+                                color: Color(0xFF6B46C1),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
 
                   Container(
                     width: double.infinity,
