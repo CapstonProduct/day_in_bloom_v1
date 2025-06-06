@@ -94,13 +94,15 @@ class _ReportSleepScreenState extends State<ReportSleepScreen> {
             borderRadius: BorderRadius.circular(16),
           ),
           child: Container(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.8,
+            ),
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -120,48 +122,56 @@ class _ReportSleepScreenState extends State<ReportSleepScreen> {
                   ],
                 ),
                 const SizedBox(height: 16),
-                _buildSleepStageItem(
-                  '깊은 수면',
-                  '신체적 회복과 기억 강화가 일어나는 가장 중요한 수면 단계입니다. 성장호르몬이 분비되어 근육과 조직이 회복됩니다.',
-                  const Color(0xFF6B46C1),
-                ),
-                const SizedBox(height: 12),
-                _buildSleepStageItem(
-                  '얕은 수면',
-                  '깊은 잠에 들어가기 전 단계로, 몸이 서서히 휴식 상태로 전환됩니다. 쉽게 깰 수 있는 상태입니다.',
-                  const Color(0xFF6B46C1),
-                ),
-                const SizedBox(height: 12),
-                _buildSleepStageItem(
-                  '렘 수면',
-                  '꿈을 꾸는 단계로 뇌가 활발하게 활동합니다. 기억 정리와 학습 내용 정착이 이루어집니다.',
-                  const Color(0xFF6B46C1),
-                ),
-                const SizedBox(height: 12),
-                _buildSleepStageItem(
-                  '수면 중 깸',
-                  '밤중에 잠깐 깨는 것은 정상이지만, 너무 자주 깨면 수면의 질이 떨어질 수 있습니다.',
-                  const Color(0xFF6B46C1),
-                ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF6B46C1),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
-                    child: const Text(
-                      '확인',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        _buildSleepStageItem(
+                          '깊은 수면',
+                          '''깊은 수면은 보통 잠든 후 몇 시간 동안 가장 많이 나타납니다. 아침에 상쾌하게 일어났다면 전날 밤에 깊은 수면을 충분히 취했을 가능성이 높습니다. 이 단계에서는 외부 자극에 대한 반응이 줄어들어 깨어나기 어려워지며, 호흡이 느려지고 근육이 이완되며 심박수가 보다 규칙적으로 변합니다. 나이가 들수록 깊은 수면의 양이 자연스럽게 감소하는 경향이 있지만, 개인마다 수면 패턴은 다를 수 있습니다. 깊은 수면은 신체 회복, 기억과 학습 능력, 면역 체계 강화에 중요한 역할을 합니다.''',
+                          const Color(0xFF6B46C1),
+                        ),
+                        const SizedBox(height: 12),
+                        _buildSleepStageItem(
+                          '얕은 수면',
+                          '''얕은 수면은 매일 밤 수면으로 진입할 때의 첫 단계로, 몸이 이완되고 느려지기 시작하면서 시작됩니다. 일반적으로 잠들고 몇 분 이내에 시작되며, 이 초기 단계에서는 깨어 있음과 잠듦 사이를 오가며 비교적 깨어있을 때와 가까운 상태이므로 쉽게 깨어날 수 있습니다. 이때 호흡과 심박수는 약간 감소합니다. 얕은 수면은 정신적 및 신체적 회복에 도움이 됩니다.''',
+                          const Color(0xFF6B46C1),
+                        ),
+                        const SizedBox(height: 12),
+                        _buildSleepStageItem(
+                          '렘 수면',
+                          '''REM 수면은 보통 첫 번째 깊은 수면 단계를 지나고 나서 나타납니다. 수면 주기의 후반부로 갈수록 REM 수면의 비중이 커집니다. 이 단계에서는 뇌 활동이 활발해지고 꿈이 주로 이때 발생합니다. 눈동자가 빠르게 움직이며, 심박수는 증가하고 호흡은 불규칙해집니다. 일반적으로 목 아래 근육은 움직이지 않게 되어 꿈속 행동을 실제로 하지 않도록 합니다. REM 수면은 기분 조절, 학습, 기억 형성에 중요한 역할을 하며, 뇌가 하루 동안의 정보를 처리하고 장기 기억으로 저장합니다.''',
+                          const Color(0xFF6B46C1),
+                        ),
+                        const SizedBox(height: 12),
+                        _buildSleepStageItem(
+                          '수면 중 깸',
+                          '''수면 중에 일시적으로 깨어 있는 것은 정상적인 현상입니다. 특히 2~3분 미만으로 깨어 있었을 경우, 깨어났다는 사실조차 기억하지 못할 수 있습니다. 아침에 피곤하게 느껴진다면, 다른 날보다 수면 중 깨어 있었던 시간이 많았을 수 있습니다. 이전에는 Fitbit에서 깨어 있었던 시간, 뒤척임, 수면 시간을 각각 표시했지만, 이제는 심박수 및 기타 데이터를 바탕으로 더 정밀하게 수면 단계를 추정합니다. 이에 따라 깨어 있었던 시간과 뒤척인 시간을 합산하여 총 깨어 있는 시간으로 보여줍니다.''',
+                          const Color(0xFF6B46C1),
+                        ),
+                        const SizedBox(height: 20),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF6B46C1),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                            ),
+                            child: const Text(
+                              '확인',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

@@ -71,13 +71,13 @@ class _ReportStressScoreScreenState extends State<ReportStressScoreScreen> {
     String stateDescription;
     String recommendedAction;
 
-    if (stressScore >= 0 && stressScore <= 20) {
+    if (stressScore >= 15 && stressScore <= 30) {
       stateDescription = "매우 양호";
       recommendedAction = "휴식이 잘 되었음, 휴식 권장";
-    } else if (stressScore >= 21 && stressScore <= 40) {
-      stateDescription = "양호/정상 범위";
+    } else if (stressScore >= 31 && stressScore <= 45) {
+      stateDescription = "정상 범위";
       recommendedAction = "스트레스 낮음, 활동 가능";
-    } else if (stressScore >= 41 && stressScore <= 60) {
+    } else if (stressScore >= 46 && stressScore <= 60) {
       stateDescription = "주의 단계";
       recommendedAction = "일시적 스트레스 증가 가능";
     } else if (stressScore >= 61 && stressScore <= 80) {
