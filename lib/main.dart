@@ -49,6 +49,11 @@ Future<void> main() async {
     print('FCM Token: null');
   }
 
+  messaging.onTokenRefresh.listen((newToken) async {
+    print('FCM Token refreshed: $newToken');
+    await sendTokenToLambda(newToken);
+  });
+
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   await _initializeLocalNotifications();
