@@ -13,12 +13,86 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final PageController _pageController = PageController();
   final List<String> guideTexts = [
-    "1. Fitbit 로그인 버튼을 누른 후\nGoogle 아이디로 로그인하세요.",
+    "1. 하단 주황색 Fitbit 로그인 버튼을\n누른 후, 'Google로 계속' 버튼을\n클릭하세요",
     "2. Google 계정 정보를\n입력하세요.",
     "3. 첫 로그인 이후에는\n저장된 Google 계정으로\n간편하게 로그인 할 수 있어요.",
   ];
-
+  
   bool _autoLogin = false;
+  bool _isLoading = false;
+
+  // 예쁜 로딩 모달을 띄우는 함수
+  void _showLoadingModal() {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // 뒤로가기나 바깥 터치로 닫히지 않게
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 10,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // 로딩 애니메이션
+                Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: const Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
+                      strokeWidth: 3,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                // 메시지
+                const Text(
+                  "잠시만 기다려주세요",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  "로그인 정보를 확인하고 있어요",
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // 로딩 모달을 닫는 함수
+  void _hideLoadingModal() {
+    if (Navigator.of(context).canPop()) {
+      Navigator.of(context).pop();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +115,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 12),
                 SizedBox(
                   height: MediaQuery.of(context).size.height * 0.6,
                   child: PageView.builder(
@@ -85,6 +158,15 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                   ),
                 ),
+                const Text(
+                  "Fitbit 기기를 사용하셔야,\n정상적으로 서비스 이용이 가능합니다",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                  ),
+                ),
                 const SizedBox(height: 8),
                 SmoothPageIndicator(
                   controller: _pageController,
@@ -122,47 +204,73 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 50,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.orange,
+                        backgroundColor: _isLoading ? Colors.grey : Colors.orange,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-                      ),                      
-                      onPressed: () async {
+                      ),
+                      onPressed: _isLoading ? null : () async {
+                        setState(() {
+                          _isLoading = true;
+                        });
+
                         try {
-                          // 수정 전
-                          // final result = await FitbitAuthService.loginWithFitbit(autoLogin: _autoLogin);
-                          // final alreadyEntered = await FitbitAuthService.isUserInfoEntered();
-                          // if (!mounted) return;
-
-                          // if (!alreadyEntered) {
-                          //   context.go('/login/inputUserInfo');
-                          // } else {
-                          //   context.go('/main');
-                          // }
-                          
-                          // 수정 후
                           final result = await FitbitAuthService.loginWithFitbit(autoLogin: _autoLogin);
+                          
+                          // 로그인 성공 후 모달 표시
+                          if (mounted) {
+                            _showLoadingModal();
+                          }
+                          
+                          // 잠시 대기 (필요시 조정)
+                          await Future.delayed(const Duration(milliseconds: 500));
+                          
                           final userInfoEntered = await FitbitAuthService.checkUserInfoEnteredFromServer();
-
                           debugPrint("userInfoEntered: $userInfoEntered");
-
+                          
                           if (!mounted) return;
-
+                          
+                          // 로딩 모달 닫기
+                          _hideLoadingModal();
+                          
+                          // 페이지 이동
                           if (!userInfoEntered) {
                             context.go('/login/inputUserInfo');
                           } else {
                             context.go('/main');
                           }
-
                         } catch (e) {
                           print("로그인 에러: $e");
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("로그인 실패. 다시 시도해주세요.")),
-                          );
+                          
+                          // 로딩 모달이 열려있다면 닫기
+                          if (mounted) {
+                            _hideLoadingModal();
+                          }
+                          
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("로그인 실패. 다시 시도해주세요.")),
+                            );
+                          }
+                        } finally {
+                          if (mounted) {
+                            setState(() {
+                              _isLoading = false;
+                            });
+                          }
                         }
                       },
-                      child: const Text(
-                        "Fitbit 로그인",
-                        style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
+                      child: _isLoading 
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          )
+                        : const Text(
+                            "Fitbit 로그인",
+                            style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
                     ),
                   ),
                 ),
