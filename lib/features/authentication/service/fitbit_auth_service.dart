@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:day_in_bloom_v1/features/authentication/service/myinapp_browser.dart';
+import 'package:day_in_bloom_v1/utils/fcm_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -112,6 +113,9 @@ class FitbitAuthService {
 
         if (response.statusCode == 200) {
           print("람다 전송 성공: $decodedBody");
+
+          // 로그인 후 FCM 토큰 등록
+          await FCMService.init();
         } else {
           print("람다 전송 실패: ${response.statusCode} - $decodedBody");
         }
@@ -148,6 +152,8 @@ class FitbitAuthService {
   }
 
   static Future<void> logout() async {
+    await FCMService.deleteTokenFromLambda(); // 로그아웃 시 토큰 삭제
+
     await _storage.deleteAll();
   }
 
