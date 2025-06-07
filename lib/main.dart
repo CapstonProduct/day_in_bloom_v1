@@ -10,9 +10,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:day_in_bloom_v1/features/authentication/service/fitbit_auth_service.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
 

@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:day_in_bloom_v1/features/authentication/service/fitbit_auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:day_in_bloom_v1/widgets/app_bar.dart';
@@ -147,7 +146,7 @@ class _ReportDoctorAdviceScreenState extends State<ReportDoctorAdviceScreen> {
                             ],
                           ),
                         );
-                      }).toList(),
+                      }),
                   ],
                 ),
               ),

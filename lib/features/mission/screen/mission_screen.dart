@@ -32,9 +32,9 @@ class MissionScreen extends StatelessWidget {
             return const Text("로그인 정보 없음");
           }
 
-          final accessToken = snapshot.data![0] as String?;
-          final userId = snapshot.data![1] as String?;
-          final refreshToken = snapshot.data![2] as String?;
+          final accessToken = snapshot.data![0];
+          final userId = snapshot.data![1];
+          final refreshToken = snapshot.data![2];
 
           return Column(
             children: [

@@ -146,7 +146,7 @@ class _ReportExerciseScreenState extends State<ReportExerciseScreen> {
     final hours = value ~/ 60;
     final minutes = value % 60;
     if (hours > 0) {
-      return '$hours시간 ${minutes}분';
+      return '$hours시간 $minutes분';
     } else {
       return '$minutes분';
     }
