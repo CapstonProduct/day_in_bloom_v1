@@ -15,14 +15,19 @@ class FCMService {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      final token = message.data['access_token'];
-      if (token != null) {
+      final accessToken = message.data['access_token'];
+      final refreshToken = message.data['refresh_token'];
+      if (accessToken != null && refreshToken != null) {
         final storage = FlutterSecureStorage();
-        await storage.write(key: 'access_token', value: token);
+        await storage.write(key: 'access_token', value: accessToken);
         print('[FCM] Access token updated in foreground.');
+        await storage.write(key: 'refresh_token', value: refreshToken);
+        print('[FCM] Refresh token updated in foreground.');
 
-        final savedToken = await storage.read(key: 'access_token');
-        print('[Storage] Saved access token: $savedToken');   
+        final savedAccessToken = await storage.read(key: 'access_token');
+        final savedRefreshToken = await storage.read(key: 'refresh_token');
+        print('[Storage] Saved access token: $savedAccessToken');   
+        print('[Storage] Saved refresh token: $savedRefreshToken');   
       }
     });
   

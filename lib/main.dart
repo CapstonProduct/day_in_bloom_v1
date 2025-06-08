@@ -20,15 +20,20 @@ import 'package:http/http.dart' as http;
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  final token = message.data['access_token'];
-  if (token != null) {
-    final storage = FlutterSecureStorage();
-    await storage.write(key: 'access_token', value: token);
-    print('[FCM] Access token updated in background.');
-    
-    final savedToken = await storage.read(key: 'access_token');
-    print('[Storage] Saved access token: $savedToken');   
-  }
+    final accessToken = message.data['access_token'];
+    final refreshToken = message.data['refresh_token'];
+    if (accessToken != null && refreshToken != null) {
+      final storage = FlutterSecureStorage();
+      await storage.write(key: 'access_token', value: accessToken);
+      print('[FCM] Access token updated in background.');
+      await storage.write(key: 'refresh_token', value: refreshToken);
+      print('[FCM] Refresh token updated in background.');
+
+      final savedAccessToken = await storage.read(key: 'access_token');
+      final savedRefreshToken = await storage.read(key: 'refresh_token');
+      print('[Storage] Saved access token: $savedAccessToken');   
+      print('[Storage] Saved refresh token: $savedRefreshToken');   
+    }
 }
 
 Future<void> main() async {
