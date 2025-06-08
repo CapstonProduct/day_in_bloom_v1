@@ -75,7 +75,7 @@ class _ReportDoctorAdviceScreenState extends State<ReportDoctorAdviceScreen> {
     final encodedId = FitbitAuthService.getUserId();
 
     return Scaffold(
-      appBar: CustomAppBar(title: "$elderlyName 어르신 건강 리포트"),
+      appBar: CustomAppBar(title: "건강 리포트"),
       body: RefreshIndicator(
         onRefresh: _refreshAdvice,
         color: Colors.green,

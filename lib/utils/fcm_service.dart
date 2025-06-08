@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:day_in_bloom_v1/features/authentication/service/fitbit_auth_service.dart';
 
@@ -10,6 +11,21 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 
 class FCMService {
   static Future<void> init() async {
+
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+      final token = message.data['access_token'];
+      if (token != null) {
+        final storage = FlutterSecureStorage();
+        await storage.write(key: 'access_token', value: token);
+        print('[FCM] Access token updated in foreground.');
+
+        final savedToken = await storage.read(key: 'access_token');
+        print('[Storage] Saved access token: $savedToken');   
+      }
+    });
+  
     await _requestPermission();
     await _initLocalNotifications();
 
