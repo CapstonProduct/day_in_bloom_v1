@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:http/http.dart' as http;
+import 'package:day_in_bloom_v1/features/authentication/service/fitbit_auth_service.dart';
 
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final String title;
   final bool showBackButton;
   
@@ -11,19 +14,87 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.showBackButton = false,
   });
 
+  @override
+  State<CustomAppBar> createState() => _CustomAppBarState();
+  
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
+
+class _CustomAppBarState extends State<CustomAppBar> {
+  int _batteryLevel = 0;
+  bool _isLoading = true;
+  bool _hasError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchBatteryLevel();
+  }
+
+  Future<void> _fetchBatteryLevel() async {
+    try {
+      final encodedId = await FitbitAuthService.getUserId();
+      if (encodedId == null) {
+        setState(() {
+          _hasError = true;
+          _isLoading = false;
+        });
+        return;
+      }
+
+      final response = await http.post(
+        Uri.parse('https://s7vy3inb6e.execute-api.ap-northeast-2.amazonaws.com/dev/battery-status'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'encodedId': encodedId}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final rawBattery = data['battery_level'] ?? '';
+        final batteryLevel = int.tryParse(rawBattery.toString().replaceAll('%', '')) ?? 0;
+        
+        setState(() {
+          _batteryLevel = batteryLevel;
+          _isLoading = false;
+          _hasError = false;
+        });
+      } else {
+        setState(() {
+          _hasError = true;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _hasError = true;
+        _isLoading = false;
+      });
+    }
+  }
+
   Color _getBatteryIndicatorColor() {
-    int batteryStatus = 90;
-    if (batteryStatus > 60) {
+    if (_hasError || _isLoading) {
+      return Colors.grey;
+    }
+    
+    if (_batteryLevel > 60) {
       return Colors.green;
-    } else if (batteryStatus > 30) {
+    } else if (_batteryLevel > 30) {
       return Colors.yellow;
     } else {
       return Colors.red;
     }
   }
 
-  int _getBatteryLevel() {
-    return 90; // 실제로는 배터리 상태를 가져오는 로직이 필요
+  String _getBatteryDisplayText() {
+    if (_isLoading) {
+      return '...';
+    } else if (_hasError || _batteryLevel <= 0) {
+      return '--';
+    } else {
+      return '${_batteryLevel}%';
+    }
   }
 
   @override
@@ -69,9 +140,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                     ),
                   ),
                   const SizedBox(width: 4),
-                  // 배터리 레벨 텍스트
                   Text(
-                    '${_getBatteryLevel()}%',
+                    _getBatteryDisplayText(),
                     style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
@@ -83,9 +153,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
           ),
           const SizedBox(width: 12),
-          // 앱 제목
           Text(
-            title,
+            widget.title,
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 16,
@@ -94,7 +163,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ],
       ),
-      leading: showBackButton ? const BackButton(color: Colors.black) : null,
+      leading: widget.showBackButton ? const BackButton(color: Colors.black) : null,
       actions: [
         IconButton(
           icon: const Icon(Icons.notifications_none_outlined, color: Colors.black),
@@ -118,7 +187,4 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
     );
   }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
