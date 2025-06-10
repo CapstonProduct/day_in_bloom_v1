@@ -77,6 +77,18 @@ class _CalendarWidgetState extends State<CalendarWidget> {
         parsedDate = parsedDate.isBefore(first) ? first : last;
       }
 
+      // 텍스트 입력으로 날짜 변경할 때도 hasReport 체크
+      final key = DateFormat('yyyy-MM-dd').format(parsedDate);
+      final data = _markerMap[key];
+      final hasReport = data?['has_report'] ?? false;
+
+      if (!hasReport) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('⛔ 해당 날짜의 리포트가 없습니다.')),
+        );
+        return;
+      }
+
       setState(() {
         _selectedDay = parsedDate;
         _focusedDay = parsedDate;
@@ -98,6 +110,18 @@ class _CalendarWidgetState extends State<CalendarWidget> {
     );
 
     if (pickedDate != null) {
+      // DatePicker로 날짜 선택할 때도 hasReport 체크
+      final key = DateFormat('yyyy-MM-dd').format(pickedDate);
+      final data = _markerMap[key];
+      final hasReport = data?['has_report'] ?? false;
+
+      if (!hasReport) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('⛔ 해당 날짜의 리포트가 없습니다.')),
+        );
+        return;
+      }
+
       setState(() {
         _selectedDay = pickedDate;
         _focusedDay = pickedDate;
@@ -150,6 +174,18 @@ class _CalendarWidgetState extends State<CalendarWidget> {
           focusedDay: _focusedDay ?? DateTime.now(),
           selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
           onDaySelected: (selectedDay, focusedDay) {
+            // hasReport 체크
+            final key = DateFormat('yyyy-MM-dd').format(selectedDay);
+            final data = _markerMap[key];
+            final hasReport = data?['has_report'] ?? false;
+
+            if (!hasReport) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('⛔ 해당 날짜의 리포트가 없습니다.')),
+              );
+              return;
+            }
+
             setState(() {
               _selectedDay = selectedDay;
               _focusedDay = selectedDay;
@@ -171,16 +207,18 @@ class _CalendarWidgetState extends State<CalendarWidget> {
               final data = _markerMap[key];
 
               final marker = data?['marker_type'];
-              final hasReport = data?['has_report'];
+              final hasReport = data?['has_report'] ?? false;
 
               Widget dayText = Text(
                 '${date.day}',
-                style: TextStyle(color: Colors.black),
+                style: TextStyle(
+                  color: Colors.black,
+                ),
               );
 
               List<Widget> children = [dayText];
 
-              if (hasReport != true) {
+              if (!hasReport) {
                 children.add(
                   Opacity(
                     opacity: 0.6,
@@ -188,7 +226,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                       width: 20,
                       height: 20,
                       decoration: BoxDecoration(
-                        color: Colors.grey,
+                        color: Colors.grey.shade400,
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -199,7 +237,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
               if (marker != null && marker != 'none') {
                 children.add(
                   Opacity(
-                    opacity: 0.4,
+                    opacity: hasReport ? 0.4 : 0.2, 
                     child: Image.asset(
                       getImagePathFromMarker(marker),
                       width: 35,
