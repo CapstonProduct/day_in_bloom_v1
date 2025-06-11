@@ -104,6 +104,25 @@ class MissionScreen extends StatelessWidget {
                           },
                           isChecked: false,
                         ),
+                        Container(
+                          padding: EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(
+                              color: Colors.greenAccent,
+                              width: 2,
+                            ),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            "위의 오늘 할일 목록을 클릭하시면\n해당 목록으로 이동합니다.\n할일을 완료하시면 오늘의 꽃밭일지에\n완료한 개수에 따라 씨앗 ~ 꽃이 핍니다 :)",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[700],
+                              height: 1.5,
+                            ),
+                          ),
+                        )                      
                       ],
                     ),
                   ),

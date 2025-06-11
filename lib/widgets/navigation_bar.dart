@@ -18,7 +18,7 @@ class CustomNavigationBar extends StatelessWidget {
       child: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         items: [
-          _buildNavItem(Icons.fmd_good_outlined, '메인 화면', 0),
+          _buildNavItem(Icons.fmd_good_outlined, '오늘 할일', 0),
           _buildNavItem(Icons.filter_vintage_outlined, '꽃발 일지', 1),
           _buildNavItem(Icons.forum_outlined, '건강 문답', 2),
           _buildNavItem(Icons.settings_outlined, '설정', 3),
