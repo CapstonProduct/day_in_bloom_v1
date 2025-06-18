@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -32,10 +33,34 @@ class _SleepRecommendationScreenState extends State<SleepRecommendationScreen> {
         "${now.day.toString().padLeft(2, '0')}";
   }
 
+  double _progressValue = 0.0;
+  Timer? _progressTimer;
+
   @override
   void initState() {
     super.initState();
+    _startFakeProgress();
     _sleepData = _fetchSleepData();
+  }
+
+  void _startFakeProgress() {
+    _progressValue = 0.0;
+    _progressTimer?.cancel();
+    _progressTimer = Timer.periodic(const Duration(milliseconds: 600), (timer) {
+      setState(() {
+        if (_progressValue < 1.0) {
+          _progressValue += 0.02;
+        } else {
+          _progressTimer?.cancel();
+        }
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _progressTimer?.cancel();
+    super.dispose();
   }
 
   Future<Map<String, String>> _fetchSleepData() async {
@@ -70,6 +95,7 @@ class _SleepRecommendationScreenState extends State<SleepRecommendationScreen> {
 
   Future<void> _refreshSleepData() async {
     setState(() {
+      _startFakeProgress();
       _sleepData = _fetchSleepData();
     });
   }
@@ -115,7 +141,31 @@ class _SleepRecommendationScreenState extends State<SleepRecommendationScreen> {
           future: _sleepData,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator(color: Colors.green));
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "수면 추천 데이터를 불러오는 중이에요...\n최대 30초 정도 걸릴 수 있어요!",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    const SizedBox(height: 20),
+                    LinearProgressIndicator(
+                      value: _progressValue,
+                      minHeight: 8,
+                      backgroundColor: Colors.grey.shade200,
+                      color: Colors.green,
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      "${(_progressValue * 100).toInt()}% 완료",
+                      style: const TextStyle(color: Colors.black54),
+                    ),
+                  ],
+                ),
+              );
             }
 
             final data = snapshot.data ?? _defaultSleepData;
