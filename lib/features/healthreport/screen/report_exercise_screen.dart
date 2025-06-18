@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:day_in_bloom_v1/widgets/app_bar.dart';
 import 'package:day_in_bloom_v1/features/authentication/service/fitbit_auth_service.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 class ReportExerciseScreen extends StatefulWidget {
   const ReportExerciseScreen({super.key});
@@ -15,11 +16,25 @@ class ReportExerciseScreen extends StatefulWidget {
 
 class _ReportExerciseScreenState extends State<ReportExerciseScreen> {
   late Future<Map<String, dynamic>> _reportData;
+  final FlutterTts flutterTts = FlutterTts();
 
   @override
   void initState() {
     super.initState();
     _reportData = fetchReportData();
+
+    flutterTts.setLanguage("ko-KR");
+    flutterTts.setSpeechRate(0.6); 
+  }
+
+  @override
+  void dispose() {
+    flutterTts.stop();
+    super.dispose();
+  }
+
+  Future<void> _speakAnalysis(String text) async {
+    await flutterTts.speak(text);
   }
 
   Future<void> _refreshData() async {
@@ -223,6 +238,25 @@ class _ReportExerciseScreenState extends State<ReportExerciseScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                                                SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            icon: const Icon(Icons.volume_up, color: Colors.white),
+                            label: const Text(
+                              '음성으로 듣기',
+                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                            ),
+                            onPressed: () => _speakAnalysis(analysis),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF41af7a),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
                         Text(
                           selectedDate,
                           style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black45),
